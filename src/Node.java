@@ -17,6 +17,7 @@ public class Node {
 	public final int nodeID;
 	public final Location location;
 	public final Collection<Segment> segments;
+// change to a pair of incoming and outgoing adjacency lists
 
 	public Node(int nodeID, double lat, double lon) {
 		this.nodeID = nodeID;
