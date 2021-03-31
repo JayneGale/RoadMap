@@ -12,14 +12,16 @@ public class Road {
 	public final int roadID;
 	public final String name, city;
 	public final Collection<Segment> components;
+	public final int speed_limit;
 
 	public Road(int roadID, int type, String label, String city, int oneway,
-			int speed, int roadclass, int notforcar, int notforpede,
-			int notforbicy) {
+				int speed_limit, int roadclass, int notforcar, int notforpede,
+				int notforbicy) {
 		this.roadID = roadID;
 		this.city = city;
 		this.name = label;
 		this.components = new HashSet<Segment>();
+		this.speed_limit = speed_limit;
 	}
 
 	public void addSegment(Segment seg) {

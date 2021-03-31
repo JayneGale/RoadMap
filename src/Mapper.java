@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 /**
  * This is the main class for the mapping program. It extends the GUI abstract
@@ -18,6 +20,7 @@ public class Mapper extends GUI {
 	public static final Color NODE_COLOUR = new Color(77, 113, 255);
 	public static final Color SEGMENT_COLOUR = new Color(130, 130, 130);
 	public static final Color HIGHLIGHT_COLOUR = new Color(255, 219, 77);
+	public static final Color SHORTEST_PATH__COLOUR = new Color(122, 255, 77);
 
 	// these two constants define the size of the node squares at different zoom
 	// levels; the equation used is node size = NODE_INTERCEPT + NODE_GRADIENT *
@@ -156,10 +159,23 @@ public class Mapper extends GUI {
 		if(startNode == null || targetNode == null){
 			System.err.println("Need to specify both nodes");
 		}
+		AStar(startNode, targetNode);
 		//TO DO: the A* pathfinding on the two nodes
 		startNode = null;
 		targetNode = null;
 	}
+	private void AStar(Node startNode, Node targetNode) {
+		Collection<Segment> shortestPath = null;
+		HashSet<Node> visited = new HashSet<>();
+
+		// define an AStar object containing Node, g weight to this node, H estimate to goalNode
+
+		PriorityQueue<Node> fringe = null;
+		fringe.add(startNode);
+//			shortestPath.add(startNode);
+		graph.setShortestPathColour(shortestPath);
+		}
+
 	@Override
 	protected void onAPs() {
 // take the Graph and find all the APs

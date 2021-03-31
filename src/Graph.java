@@ -25,6 +25,7 @@ public class Graph {
 
 	Node highlightedNode;
 	Collection<Road> highlightedRoads = new HashSet<>();
+	Collection<Segment> highlightShortestPath = new HashSet<>();
 
 	public Graph(File nodes, File roads, File segments, File polygons) {
 		this.nodes = Parser.parseNodes(nodes, this);
@@ -52,8 +53,13 @@ public class Graph {
 				seg.draw(g2, origin, scale);
 			}
 		}
+		// draw the segments of the shortest path from the AStar algorithm.
+		g2.setColor(Mapper.SHORTEST_PATH__COLOUR);
+		g2.setStroke(new BasicStroke(3));
+		for (Segment segment : highlightShortestPath) {
+				segment.draw(g2, origin, scale);			}
 
-		// draw all the nodes.
+			// draw all the nodes.
 		g2.setColor(Mapper.NODE_COLOUR);
 		for (Node n : nodes.values())
 			n.draw(g2, screen, origin, scale);
@@ -72,6 +78,11 @@ public class Graph {
 	public void setHighlight(Collection<Road> roads) {
 		this.highlightedRoads = roads;
 	}
+
+	public void setShortestPathColour(Collection<Segment> segments) {
+		this.highlightShortestPath = segments;
+	}
+
 }
 
 // code for COMP261 assignments
