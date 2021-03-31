@@ -75,6 +75,8 @@ public abstract class GUI {
 	 * Move enum is passed, representing the button clicked by the user.
 	 */
 	protected abstract void onMove(Move m);
+	protected abstract void onAStar();
+	protected abstract void onAPs();
 
 	/**
 	 * Is called when the user has successfully selected a directory to load the
@@ -135,8 +137,8 @@ public abstract class GUI {
 
 	private static final boolean UPDATE_ON_EVERY_CHARACTER = false;
 
-	private static final int DEFAULT_DRAWING_HEIGHT = 400;
-	private static final int DEFAULT_DRAWING_WIDTH = 400;
+	private static final int DEFAULT_DRAWING_HEIGHT = 800;
+	private static final int DEFAULT_DRAWING_WIDTH = 800;
 	private static final int TEXT_OUTPUT_ROWS = 5;
 	private static final int SEARCH_COLS = 15;
 
@@ -279,6 +281,20 @@ public abstract class GUI {
 				redraw();
 			}
 		});
+		JButton astar = new JButton("A*");
+		astar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				onAStar();
+				redraw();
+			}
+		});
+		JButton aps = new JButton("AP");
+		aps.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				onAPs();
+				redraw();
+			}
+		});
 
 		// next, make the search box at the top-right. we manually fix
 		// it's size, and add an action listener to call your code when
@@ -339,13 +355,15 @@ public abstract class GUI {
 
 		JPanel navigation = new JPanel();
 		navigation.setMaximumSize(new Dimension(150, 60));
-		navigation.setLayout(new GridLayout(2, 3));
+		navigation.setLayout(new GridLayout(2, 4));
 		navigation.add(out);
 		navigation.add(north);
 		navigation.add(in);
+		navigation.add(astar);
 		navigation.add(west);
 		navigation.add(south);
 		navigation.add(east);
+		navigation.add(aps);
 		controls.add(navigation);
 		controls.add(Box.createRigidArea(new Dimension(15, 0)));
 		// glue is another invisible component that grows to take up all the

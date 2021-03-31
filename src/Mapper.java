@@ -38,11 +38,14 @@ public class Mapper extends GUI {
 	// these two define the 'view' of the program, ie. where you're looking and
 	// how zoomed in you are.
 	private Location origin;
-	private double scale;
+	private double scale = 3;
 
 	// our data structures.
 	private Graph graph;
 	private Trie trie;
+
+	private Node startNode = null;
+	private Node targetNode = null;
 
 	@Override
 	protected void redraw(Graphics g) {
@@ -70,6 +73,12 @@ public class Mapper extends GUI {
 			graph.setHighlight(closest);
 			getTextOutputArea().setText(closest.toString());
 		}
+		 if (startNode == null){
+		 	startNode = closest;
+		 }
+		 else {
+		 	targetNode = closest;
+		 }
 	}
 
 	@Override
@@ -142,13 +151,27 @@ public class Mapper extends GUI {
 			}
 		}
 	}
+	@Override
+	protected void onAStar() {
+		if(startNode == null || targetNode == null){
+			System.err.println("Need to specify both nodes");
+		}
+		//TO DO: the A* pathfinding on the two nodes
+		startNode = null;
+		targetNode = null;
+	}
+	@Override
+	protected void onAPs() {
+// take the Graph and find all the APs
+	}
+
 
 	@Override
 	protected void onLoad(File nodes, File roads, File segments, File polygons) {
 		graph = new Graph(nodes, roads, segments, polygons);
 		trie = new Trie(graph.roads.values());
-		origin = new Location(-250, 250); // close enough
-		scale = 1;
+		origin = new Location(-160, 200); // close enough
+		scale = 3;
 	}
 
 	/**
