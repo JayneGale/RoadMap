@@ -49,6 +49,7 @@ public class Mapper extends GUI {
 
 	private Node startNode = null;
 	private Node targetNode = null;
+	private boolean isTime = false;
 
 	@Override
 	protected void redraw(Graphics g) {
@@ -82,6 +83,7 @@ public class Mapper extends GUI {
 		 else {
 		 	targetNode = closest;
 		 }
+		 // set up 2 check boxes called distance and time; initially set distance as checked, but if the user ticks time true then distance is set to false
 	}
 
 	@Override
@@ -159,20 +161,17 @@ public class Mapper extends GUI {
 		if(startNode == null || targetNode == null){
 			System.err.println("Need to specify both nodes");
 		}
-		AStar(startNode, targetNode);
-		//TO DO: the A* pathfinding on the two nodes
+		AStar(startNode, targetNode, isTime);
+		// reset the startNode and targetNode when finished
 		startNode = null;
 		targetNode = null;
 	}
-	private void AStar(Node startNode, Node targetNode) {
+	public AStarPath path = new AStarPath();
+
+	public void AStar(Node startNode, Node targetNode, boolean isTime) {
 		Collection<Segment> shortestPath = null;
-		HashSet<Node> visited = new HashSet<>();
-
-		// define an AStar object containing Node, g weight to this node, H estimate to goalNode
-
-		PriorityQueue<Node> fringe = null;
-		fringe.add(startNode);
-//			shortestPath.add(startNode);
+		System.out.println("startNode nodeID " + startNode.nodeID + " target nodeID " + targetNode.nodeID);
+		shortestPath = path.FindPath(startNode, targetNode, isTime);
 		graph.setShortestPathColour(shortestPath);
 		}
 

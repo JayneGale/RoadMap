@@ -56,6 +56,9 @@ public class Graph {
 		// draw the segments of the shortest path from the AStar algorithm.
 		g2.setColor(Mapper.SHORTEST_PATH__COLOUR);
 		g2.setStroke(new BasicStroke(3));
+		// TO DO: this is null so throws an error
+// XXXX have to fix this
+
 		for (Segment segment : highlightShortestPath) {
 				segment.draw(g2, origin, scale);			}
 
