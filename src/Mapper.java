@@ -4,10 +4,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This is the main class for the mapping program. It extends the GUI abstract
@@ -161,18 +158,27 @@ public class Mapper extends GUI {
 		if(startNode == null || targetNode == null){
 			System.err.println("Need to specify both nodes");
 		}
-		AStar(startNode, targetNode, isTime);
+		else {
+			DoAStar(startNode, targetNode, isTime);
+		}
 		// reset the startNode and targetNode when finished
 		startNode = null;
 		targetNode = null;
 	}
+
 	public AStarPath path = new AStarPath();
 
-	public void AStar(Node startNode, Node targetNode, boolean isTime) {
-		Collection<Segment> shortestPath = null;
-		System.out.println("startNode nodeID " + startNode.nodeID + " target nodeID " + targetNode.nodeID);
-		shortestPath = path.FindPath(startNode, targetNode, isTime);
+	public void DoAStar(Node startNode, Node targetNode, boolean isTime) {
+		Collection<Segment> shortestPath = new HashSet<>();
+		ArrayList<AStar> visited;
+//		ArrayList<Segment> fringed;
+		System.out.println("Mapper 175 DoAStar startNode nodeID " + startNode.nodeID + " target nodeID " + targetNode.nodeID);
+		visited = path.FindPath(startNode, targetNode, isTime);
+//		fringed = path.FindPath(startNode, targetNode, isTime);
+		System.out.println("Mapper 178 TrackPrev visited.size() " + visited.size());
+		shortestPath = path.TrackPrev(visited, startNode, targetNode);
 		graph.setShortestPathColour(shortestPath);
+//		graph.setShortestPathColour(fringed);
 		}
 
 	@Override
@@ -185,8 +191,10 @@ public class Mapper extends GUI {
 	protected void onLoad(File nodes, File roads, File segments, File polygons) {
 		graph = new Graph(nodes, roads, segments, polygons);
 		trie = new Trie(graph.roads.values());
-		origin = new Location(-160, 200); // close enough
-		scale = 3;
+		origin = new Location(-8, 4); // close enough
+		scale = 75;
+//		origin = new Location(-160, 200); // close enough
+//		scale = 3;
 	}
 
 	/**
