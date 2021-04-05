@@ -76,6 +76,7 @@ public abstract class GUI {
 	 */
 	protected abstract void onMove(Move m);
 	protected abstract void onAStar();
+	protected abstract void onSpeed();
 	protected abstract void onAPs();
 
 	/**
@@ -288,6 +289,14 @@ public abstract class GUI {
 				redraw();
 			}
 		});
+		JButton speed = new JButton("speed");
+		speed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				onSpeed();
+				redraw();
+			}
+		});
+
 		JButton aps = new JButton("AP");
 		aps.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
@@ -355,11 +364,12 @@ public abstract class GUI {
 
 		JPanel navigation = new JPanel();
 		navigation.setMaximumSize(new Dimension(150, 60));
-		navigation.setLayout(new GridLayout(2, 4));
+		navigation.setLayout(new GridLayout(2, 5));
 		navigation.add(out);
 		navigation.add(north);
 		navigation.add(in);
 		navigation.add(astar);
+		navigation.add(speed);
 		navigation.add(west);
 		navigation.add(south);
 		navigation.add(east);

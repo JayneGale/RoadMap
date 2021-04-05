@@ -153,6 +153,7 @@ public class Mapper extends GUI {
 			}
 		}
 	}
+	//the below as provided by Dr Mei
 	@Override
 	protected void onAStar() {
 		if(startNode == null || targetNode == null){
@@ -169,17 +170,42 @@ public class Mapper extends GUI {
 	public AStarPath path = new AStarPath();
 
 	public void DoAStar(Node startNode, Node targetNode, boolean isTime) {
-		Collection<Segment> shortestPath = new HashSet<>();
-		ArrayList<AStar> visited;
-//		ArrayList<Segment> fringed;
-		System.out.println("Mapper 175 DoAStar startNode nodeID " + startNode.nodeID + " target nodeID " + targetNode.nodeID);
-		visited = path.FindPath(startNode, targetNode, isTime);
-//		fringed = path.FindPath(startNode, targetNode, isTime);
-		System.out.println("Mapper 178 TrackPrev visited.size() " + visited.size());
-		shortestPath = path.TrackPrev(visited, startNode, targetNode);
-		graph.setShortestPathColour(shortestPath);
-//		graph.setShortestPathColour(fringed);
+		Collection<Segment> shortestPath;
+		ArrayList<AStar> visitedNodes;
+		System.out.println("Mapper175 DoAStar startNode nodeID " + startNode.nodeID + " target nodeID " + targetNode.nodeID + " isTime " + isTime);
+		visitedNodes = path.FindPath(startNode, targetNode, isTime);
+		System.out.println("Mapper178 TrackPrev visited.size() " + visitedNodes.size());
+		shortestPath = path.TrackPrev(visitedNodes, startNode, targetNode);
+		String str = "";
+		if(shortestPath.isEmpty()){
+			str = "No path from ID:" + startNode.nodeID + " loc:" + startNode.location + " to ID:" + targetNode.nodeID + " loc:" + targetNode.location;
 		}
+		else{
+
+			double weight = path.finalWeight;
+//			weight = path.FindLength(shortestPath, isTime);
+			String str1 = "Shortest path from ID:" + startNode.nodeID + " loc:" + startNode.location + " to ID:" + targetNode.nodeID + " loc:" + targetNode.location + " is ";
+			str = str1 + String.format("%.1f", weight) + " kms";
+			if(isTime){
+				str = str1 + String.format("%.1f", weight*60) + " mins";
+			}
+			graph.setShortestPathColour(shortestPath);
+		}
+		getTextOutputArea().setText(str);
+		}
+
+	@Override
+	protected void onSpeed() {
+		isTime = !isTime;
+		String str = "Calculating by ";
+		if(isTime){
+			str = str + "time";
+		}
+		if(!isTime)
+			str = str + "distance";
+		getTextOutputArea().setText(str);
+// switch between time and distance
+	}
 
 	@Override
 	protected void onAPs() {
@@ -191,9 +217,9 @@ public class Mapper extends GUI {
 	protected void onLoad(File nodes, File roads, File segments, File polygons) {
 		graph = new Graph(nodes, roads, segments, polygons);
 		trie = new Trie(graph.roads.values());
-		origin = new Location(-8, 4); // close enough
+		origin = new Location(-8, 4); // small
 		scale = 75;
-//		origin = new Location(-160, 200); // close enough
+//		origin = new Location(-160, 200); // large
 //		scale = 3;
 	}
 

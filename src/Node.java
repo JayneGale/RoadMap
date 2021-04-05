@@ -17,16 +17,23 @@ public class Node {
 	public final int nodeID;
 	public final Location location;
 	public final Collection<Segment> segments;
-// change to a pair of incoming and outgoing adjacency lists
+	// add a pair of incoming and outgoing adjacency lists
+	public final Collection<Segment> outGoing;
 
 	public Node(int nodeID, double lat, double lon) {
 		this.nodeID = nodeID;
 		this.location = Location.newFromLatLon(lat, lon);
 		this.segments = new HashSet<Segment>();
+		this.outGoing = new HashSet<Segment>();
 	}
 
 	public void addSegment(Segment seg) {
 		segments.add(seg);
+	}
+	public void addInComing(Segment seg) {
+//		TODO add only the outGoing Segments
+//		how to tell - if they are one way? Or Not?
+
 	}
 
 	public void draw(Graphics g, Dimension area, Location origin, double scale) {
