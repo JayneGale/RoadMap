@@ -31,8 +31,10 @@ public class Node {
 		segments.add(seg);
 	}
 	public void addInComing(Segment seg) {
-//		TODO add only the outGoing Segments
+//		TODO create the outGoing adjacency list
+
 //		how to tell - if they are one way? Or Not?
+		// first assume they are not one way
 
 	}
 

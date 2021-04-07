@@ -7,35 +7,37 @@ public class AStarPath {
     protected double f;
 
     public ArrayList<AStar> FindPath(Node startNode, Node targetNode, boolean isTime){
+
         ArrayList<AStar> path = new ArrayList<>();
-//        ArrayList<Node> visited = new ArrayList<>();
         List visited = new ArrayList();
-//        ArrayList<Segment> fringed =  new ArrayList<>(); // segment so I can Map it easily
         // define an AStar object containing Node, g weight to this node, H estimate to goalNode
         PriorityQueue<AStar> fringe = new PriorityQueue<>(30, new SegmentComparator());
-//      create an AStar element for startNode with no prev and no g value
+        //      create an AStar element for startNode with no prev and no g value
         AStar start = new AStar(startNode, null, 0, h_function(startNode, targetNode, isTime));
-//      add it to the fringe so the fringe has it in
+        //      add it to the fringe so the fringe has it in
         fringe.add(start);
+
         while(fringe.peek() != null) {
             // remove the top element from the priority queue - first one will be the startNode element
             AStar current = fringe.poll();
-//            System.out.println("21 Poll priority queue node " + current.node.nodeID + " number of segments: " +current.node.segments.size());
 
-//            If a node has already been visited, this second path to it is longer, so skip any visited nodes
+//            Loop through the priority queue until reach the target or the fringe is empty
+            //  If a node has already been visited, this second path to it is longer, so skip any visited nodes
             if(!visited.contains(current.node.nodeID)){
-//              Start the visit by adding this node to visited and to the path
+                // Start the visit by adding this node to visited and add this AStar element to the path
                 visited.add(current.node.nodeID);
                 path.add(current);
-//              Check if the target Node is now visited, we have reached the target // we don't stop the first time we reach the target as the endNode, only when we visit the target for the first time
+
+                // Check if the target Node is now visited, we have reached the target // we don't stop the first time we reach the target as the endNode, only when we visit the target for the first time
                 if (current.node.nodeID == targetNode.nodeID) {
                     finalWeight = current.g_Value;
                     System.out.println("36 Reached the target! " + current.node.nodeID + " g_value" + current.g_Value);
                     break;
                 }
-                //Populate the fringe with the current node's unvisited neighbours
+                // Populate the fringe with AStar elements for all the current node's unvisited neighbours
                 for (Segment s : current.node.segments) {
-//                    one  end of the segment should be the current node - find out which is the node and which is its neighbour
+//                    ToDO replace segments with outgoing edges
+                    // one end of the segment should be the current node - find out which is the node and which is its neighbour
                     if(current.node.nodeID != s.start.nodeID && current.node.nodeID != s.end.nodeID){
                         System.err.println(("43 Neither end of segment " + s.start.nodeID + s.end.nodeID + " is the current Node " + current.node.nodeID));
                     }
@@ -43,29 +45,33 @@ public class AStarPath {
                     if (s.end.nodeID == current.node.nodeID) {
                         neighbour = s.start;
                     }
+
+                    // If the neighbour hasn't been visited, calculate its g and f values
                     if(!visited.contains(neighbour.nodeID)){
-//                      If the neighbour hasn't been visited, calculate its g and f values
-//                      g is the cost (d or time) to current node from the start, plus the weight (d or time) along the segment
+
+                        // g is the cost (d or time) to current node from the start, plus the weight (d or time) along the segment
                         g = current.g_Value + g_function(s, isTime); // cumulative cost (time or distance) to get to the neighbouring node
-//                      the heuristic, h_function, is the crow flies distance or time. f is g + h ie  estimated total cost from the start to the end - we select minimal f
+
+                        //  f = g + h is the ie  estimated total cost from the start to the end (priority queue selects for minimal f)
+                        //  h = the heuristic h_function (crow flies distance or time)
                         f = g + h_function(neighbour, targetNode, isTime);
 //                      System.out.println("46 Segment start " + s.start.nodeID + " end " + neighbour.nodeID + " neighbour nodeID  " + neighbour.nodeID+ " seg g = " + g + " f = " + f);
+
                         // create an AStar <node, prev, g, f> of the unvisited neighbour and add it to the Priority Queue fringe
                         AStar next = new AStar(neighbour, current.node, g, f);
                         fringe.add(next);
                     }
                 }
-                System.out.println("47 Peek PQ best neighbour: " + fringe.peek().node.nodeID + " g "   + fringe.peek().g_Value + " and f " + fringe.peek().f_Value);
-                //once all its segments are added we are finished with current node
-                // we've marked it as visited, removed it from the fringe, and populated the fringe with it's unvisited neighbours
+//                System.out.println("47 Peek PQ best neighbour: " + fringe.peek().node.nodeID + " g "   + fringe.peek().g_Value + " and f " + fringe.peek().f_Value);
+                // finished with current node: marked it as visited, removed it from the fringe, created AStar elements from all it's unvisited neighbours and populated the fringe with them  added all its segments to the path
             }
         }
         // if there are no paths to the targetNode, the fringe will be empty and the targetNode will not be in visited.
         if(fringe.isEmpty() || fringe == null) {
-            System.err.println("There is no nodes connected to startNode" + startNode.nodeID + " to targetNode " + targetNode.nodeID);
+            System.err.println("No nodes connect to the startNode" + startNode.nodeID + " to targetNode " + targetNode.nodeID);
         }
-        int numVisits = visited.size();
         boolean pathExists = false;
+        // I could do this with contains() if path were a Set of nodeIDs, but its a List of AStars with Nodes with nodeIDs
         for (AStar p : path) {
             if (p.node.nodeID == targetNode.nodeID) {
                 pathExists = true;
@@ -75,6 +81,7 @@ public class AStarPath {
             System.err.println("78 There is no path from startNode" + startNode.nodeID + " to targetNode " + targetNode.nodeID);
         }
 //        System.out.println("last visit in visited " + path.get(numVisits - 1).node.nodeID);
+        // return the set of AStar elements that
         return path;
     }
 

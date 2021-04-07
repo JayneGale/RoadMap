@@ -172,7 +172,7 @@ public class Mapper extends GUI {
 	public void DoAStar(Node startNode, Node targetNode, boolean isTime) {
 		Collection<Segment> shortestPath;
 		ArrayList<AStar> visitedNodes;
-		System.out.println("Mapper175 DoAStar startNode nodeID " + startNode.nodeID + " target nodeID " + targetNode.nodeID + " isTime " + isTime);
+		System.out.println("Mapper175 DoAStar startNode nodeID " + startNode + " target nodeID " + targetNode + " isTime " + isTime);
 		visitedNodes = path.FindPath(startNode, targetNode, isTime);
 		System.out.println("Mapper178 TrackPrev visited.size() " + visitedNodes.size());
 		shortestPath = path.TrackPrev(visitedNodes, startNode, targetNode);
@@ -181,17 +181,26 @@ public class Mapper extends GUI {
 			str = "No path from ID:" + startNode.nodeID + " loc:" + startNode.location + " to ID:" + targetNode.nodeID + " loc:" + targetNode.location;
 		}
 		else{
-
+			String str1 = "\n Shortest path from NodeID:" + startNode.toString() + " to NodeID" + targetNode.toString();
+			getTextOutputArea().setText(str1);
 			double weight = path.finalWeight;
-//			weight = path.FindLength(shortestPath, isTime);
-			String str1 = "Shortest path from ID:" + startNode.nodeID + " loc:" + startNode.location + " to ID:" + targetNode.nodeID + " loc:" + targetNode.location + " is ";
-			str = str1 + String.format("%.1f", weight) + " kms";
+			double totWeight = 0;
+//			this does NOT print the path in order! Dammit.
+			for (Segment s : shortestPath){
+				String roadName = s.road.name;
+				String roadN = roadName.substring(0,1).toUpperCase();
+				String capName = roadN + roadName.substring(1);
+				getTextOutputArea().append("\n " + capName + String.format(" %.2fkm", s.length));
+				totWeight += s.length;
+			}
+//			This DOES calculate the total distance correctly both via the algorithm and by adding the segments separately
+			str = String.format("\n Total distance %.2f OR %.2f km ", weight, totWeight);
 			if(isTime){
-				str = str1 + String.format("%.1f", weight*60) + " mins";
+				str = String.format("\n Total time %.2f min", weight*60);
 			}
 			graph.setShortestPathColour(shortestPath);
 		}
-		getTextOutputArea().setText(str);
+		getTextOutputArea().append(str);
 		}
 
 	@Override
