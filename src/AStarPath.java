@@ -34,10 +34,13 @@ public class AStarPath {
                     System.out.println("36 Reached the target! " + current.node.nodeID + " g_value" + current.g_Value);
                     break;
                 }
+
+                current.node.addAdjacencyLists(current.node);
+//                System.out.println("38 adjlist sizes out In " + current.node.outGoing.size() + " " + current.node.incoming.size());
+
                 // Populate the fringe with AStar elements for all the current node's unvisited neighbours
-                for (Segment s : current.node.segments) {
-//                    ToDO replace segments with outgoing edges
-                    // one end of the segment should be the current node - find out which is the node and which is its neighbour
+                for (Segment s : current.node.outGoing) {
+//                     one end of the segment should be the current node - find out which is the node and which is its neighbour
                     if(current.node.nodeID != s.start.nodeID && current.node.nodeID != s.end.nodeID){
                         System.err.println(("43 Neither end of segment " + s.start.nodeID + s.end.nodeID + " is the current Node " + current.node.nodeID));
                     }
@@ -68,7 +71,7 @@ public class AStarPath {
         }
         // if there are no paths to the targetNode, the fringe will be empty and the targetNode will not be in visited.
         if(fringe.isEmpty() || fringe == null) {
-            System.err.println("No nodes connect to the startNode" + startNode.nodeID + " to targetNode " + targetNode.nodeID);
+            System.err.println("71 No nodes connect the startNode " + startNode.nodeID + " to targetNode " + targetNode.nodeID);
         }
         boolean pathExists = false;
         // I could do this with contains() if path were a Set of nodeIDs, but its a List of AStars with Nodes with nodeIDs
@@ -78,7 +81,7 @@ public class AStarPath {
             }
         }
         if (!pathExists){
-            System.err.println("78 There is no path from startNode" + startNode.nodeID + " to targetNode " + targetNode.nodeID);
+            System.err.println("78 There is no path from startNode " + startNode.nodeID + " to targetNode " + targetNode.nodeID);
         }
 //        System.out.println("last visit in visited " + path.get(numVisits - 1).node.nodeID);
         // return the set of AStar elements that
