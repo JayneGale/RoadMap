@@ -16,8 +16,9 @@ import java.util.*;
 public class Mapper extends GUI {
 	public static final Color NODE_COLOUR = new Color(77, 113, 255);
 	public static final Color SEGMENT_COLOUR = new Color(130, 130, 130);
-	public static final Color HIGHLIGHT_COLOUR = new Color(255, 219, 77);
-	public static final Color SHORTEST_PATH__COLOUR = new Color(122, 255, 77);
+	public static final Color HIGHLIGHT_COLOUR = new Color(253, 213, 57);
+	public static final Color TARGET_COLOUR = new Color (255, 67, 10);
+	public static final Color SHORTEST_PATH__COLOUR = new Color(107, 253, 57);
 
 	// these two constants define the size of the node squares at different zoom
 	// levels; the equation used is node size = NODE_INTERCEPT + NODE_GRADIENT *
@@ -71,17 +72,18 @@ public class Mapper extends GUI {
 
 		// if it's close enough, highlight it and show some information.
 		if (clicked.distance(closest.location) < MAX_CLICKED_DISTANCE) {
-			graph.setHighlight(closest);
-			getTextOutputArea().setText(closest.toString());
+//			graph.setHighligt(closest);
+			String roadNames = nodeNames(closest);
+				getTextOutputArea().setText(roadNames);
+			}
+			if (startNode == null) {
+				startNode = closest;
+				graph.setHighlight(startNode);
+			} else {
+				targetNode = closest;
+				graph.setTargetHighlight(startNode, targetNode);
+			}
 		}
-		 if (startNode == null){
-		 	startNode = closest;
-		 }
-		 else {
-		 	targetNode = closest;
-		 }
-		 // set up 2 check boxes called distance and time; initially set distance as checked, but if the user ticks time true then distance is set to false
-	}
 
 	@Override
 	protected void onSearch() {
@@ -157,7 +159,7 @@ public class Mapper extends GUI {
 	@Override
 	protected void onAStar() {
 		if(startNode == null || targetNode == null){
-			System.err.println("Need to specify both nodes");
+			getTextOutputArea().setText("Need to specify both start and target");
 		}
 		else {
 			DoAStar(startNode, targetNode, isTime);
@@ -170,41 +172,64 @@ public class Mapper extends GUI {
 	public AStarPath path = new AStarPath();
 
 	public void DoAStar(Node startNode, Node targetNode, boolean isTime) {
-		Collection<Segment> shortestPath;
+		List<Segment> shortestPath;
 		ArrayList<AStar> visitedNodes;
 		System.out.println("Mapper175 DoAStar startNode nodeID " + startNode + " target nodeID " + targetNode + " isTime " + isTime);
 		visitedNodes = path.FindPath(startNode, targetNode, isTime);
 		System.out.println("Mapper178 TrackPrev visited.size() " + visitedNodes.size());
 		shortestPath = path.TrackPrev(visitedNodes, startNode, targetNode);
 		String str = "";
-		if(shortestPath.isEmpty()){
+		if(shortestPath.isEmpty()) {
 			str = "No path from ID:" + startNode.nodeID + " loc:" + startNode.location + " to ID:" + targetNode.nodeID + " loc:" + targetNode.location;
 		}
-		else{
-			String str1 = "\n Shortest path from NodeID:" + startNode.toString() + " to NodeID" + targetNode.toString();
+		else {
+			Collections.reverse(shortestPath);
+			graph.setShortestPathColour(shortestPath);
+			String startRoadNames = nodeNames(startNode);
+			String targetRoadNames = nodeNames(targetNode);
+			String str1 = "\n Shortest path from " + startRoadNames + " to NodeID" + targetRoadNames;
 			getTextOutputArea().setText(str1);
 			double weight = path.finalWeight;
-			double totWeight = 0;
+//			double totWeight = 0;
 //			this does NOT print the path in order! Dammit.
 			for (Segment s : shortestPath){
 				String roadName = s.road.name;
-				String roadN = roadName.substring(0,1).toUpperCase();
-				String capName = roadN + roadName.substring(1);
-				getTextOutputArea().append("\n " + capName + String.format(" %.2fkm", s.length));
-				totWeight += s.length;
+				String thisRoadName = "";
+				String capName = "";
+				double totRoadDist = 0;
+				if(roadName == null){
+					System.out.println("Gotta handle null roadName: " + s.length + "km, roadID "  + s.road.roadID);
+				}
+// TODO work out logic of totalling segment weights for same named segments and only printing once when the name changes or at the end of the loop
+
+				if (thisRoadName != s.road.name) {
+					totRoadDist += s.length;
+					thisRoadName = s.road.name;
+					String roadN = thisRoadName.substring(0, 1).toUpperCase();
+					capName = roadN + thisRoadName.substring(1);
+					totRoadDist += s.length;
+					getTextOutputArea().append("\n " + capName + String.format(" %.2fkm", totRoadDist));
+				}
+
+//				totWeight += s.length;
 			}
+
 //			This DOES calculate the total distance correctly both via the algorithm and by adding the segments separately
-			str = String.format("\n Total distance %.2f OR %.2f km ", weight, totWeight);
+//			str = String.format("\n Algorithm %.2f vs Sum %.2f km ", weight, totWeight);
+			str = String.format("\n Total Distance %.1f km ", weight);
 			if(isTime){
 				str = String.format("\n Total time %.2f min", weight*60);
 			}
-			graph.setShortestPathColour(shortestPath);
-		}
+			}
 		getTextOutputArea().append(str);
 		}
 
 	@Override
 	protected void onSpeed() {
+	//		this is a toggle button between time and distance
+		// it'd be nicer to set up 2 buttons, distance and time;
+		// or radio buttons or checkboxes: start with distance checked; if user clicks time true, distance is automatically set to false
+
 		isTime = !isTime;
 		String str = "Calculating by ";
 		if(isTime){
@@ -213,14 +238,12 @@ public class Mapper extends GUI {
 		if(!isTime)
 			str = str + "distance";
 		getTextOutputArea().setText(str);
-// switch between time and distance
 	}
 
 	@Override
 	protected void onAPs() {
 // take the Graph and find all the APs
 	}
-
 
 	@Override
 	protected void onLoad(File nodes, File roads, File segments, File polygons) {
@@ -252,6 +275,29 @@ public class Mapper extends GUI {
 	public static void main(String[] args) {
 		new Mapper();
 	}
+
+	public String nodeNames(Node node) {
+		String roadNames = "";
+		String thisRoadName = "";
+		int size = node.segments.size();
+		if (size > 1) {
+			roadNames = "Corner of ";
+		}
+		for (Segment s : node.segments) {
+			System.out.println(s.road.name);
+			if (s.road.name != null) {
+				if (thisRoadName != s.road.name) {
+					thisRoadName = s.road.name;
+					String roadN = thisRoadName.substring(0, 1).toUpperCase();
+					String capName = roadN + thisRoadName.substring(1);
+					roadNames = roadNames + capName + " ";
+					System.out.println("Mapper 283" + capName);
+				}
+			}
+		}
+		return roadNames;
+	}
 }
+
 
 // code for COMP261 assignments

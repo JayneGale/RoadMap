@@ -88,8 +88,8 @@ public class AStarPath {
         return path;
     }
 
-    public Collection<Segment> TrackPrev(ArrayList<AStar> visited, Node startNode, Node targetNode){
-        Collection<Segment> shortestPath = new HashSet<>();
+    public List<Segment> TrackPrev(ArrayList<AStar> visited, Node startNode, Node targetNode){
+        List<Segment> shortestPath = new ArrayList<>();
         Node thisNode;
         Node prevNode;
         if (!visited.isEmpty()) {

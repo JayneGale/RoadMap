@@ -24,6 +24,7 @@ public class Graph {
 	Collection<Segment> segments;
 
 	Node highlightedNode;
+	Node highlightTarget;
 	Collection<Road> highlightedRoads = new HashSet<>();
 	Collection<Segment> highlightShortestPath = new HashSet<>();
 
@@ -53,16 +54,17 @@ public class Graph {
 				seg.draw(g2, origin, scale);
 			}
 		}
-		// TO DO: shortestPath is null until I finish this
+
 		// draw the segments of the shortest path from the AStar algorithm.
 		if (highlightShortestPath != null )
 		{
 			g2.setColor(Mapper.SHORTEST_PATH__COLOUR);
 			g2.setStroke(new BasicStroke(4));
 			for (Segment segment : highlightShortestPath) {
-				segment.draw(g2, origin, scale);			}
-		}
+				segment.draw(g2, origin, scale);
+			}
 
+		}
 			// draw all the nodes.
 		g2.setColor(Mapper.NODE_COLOUR);
 		for (Node n : nodes.values())
@@ -73,10 +75,23 @@ public class Graph {
 			g2.setColor(Mapper.HIGHLIGHT_COLOUR);
 			highlightedNode.draw(g2, screen, origin, scale);
 		}
+		if (highlightTarget != null )
+		{
+			g2.setColor(Mapper.HIGHLIGHT_COLOUR);
+			highlightedNode.draw(g2, screen, origin, scale);
+			g2.setColor(Mapper.TARGET_COLOUR);
+			highlightTarget.draw(g2, screen, origin, scale);
+		}
+
 	}
 
 	public void setHighlight(Node node) {
 		this.highlightedNode = node;
+	}
+
+	public void setTargetHighlight(Node startNode, Node targetNode) {
+		this.highlightedNode = startNode;
+		this.highlightTarget = targetNode;
 	}
 
 	public void setHighlight(Collection<Road> roads) {
