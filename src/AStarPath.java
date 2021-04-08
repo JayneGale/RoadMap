@@ -116,7 +116,7 @@ public class AStarPath {
                     thisNode = thisAstar.node;
                     prevNode = thisAstar.prev;
                     for(Segment s : thisNode.segments) {
-                        if (s.end == prevNode || s.start == prevNode) {
+                        if (s.end.nodeID == prevNode.nodeID || s.start.nodeID == prevNode.nodeID) {
                             shortestPath.add(s);
                             break;
                         }
