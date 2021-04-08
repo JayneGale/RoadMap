@@ -1,5 +1,4 @@
 import java.util.*;
-//import java.util.PriorityQueue;
 
 public class AStarPath {
     public double finalWeight = 0;
@@ -52,14 +51,14 @@ public class AStarPath {
                     // If the neighbour hasn't been visited, calculate its g and f values
                     if(!visited.contains(neighbour.nodeID)){
 
-                        // g is the cost (d or time) to current node from the start, plus the weight (d or time) along the segment
+                        // g is the cumulative cost (d or time) to current node from the start, plus the g (distance or time) of this segment
                         g = current.g_Value + g_function(s, isTime); // cumulative cost (time or distance) to get to the neighbouring node
 
                         //  f = g + h is the ie  estimated total cost from the start to the end (priority queue selects for minimal f)
                         //  h = the heuristic h_function (crow flies distance or time)
                         f = g + h_function(neighbour, targetNode, isTime);
-//                      System.out.println("46 Segment start " + s.start.nodeID + " end " + neighbour.nodeID + " neighbour nodeID  " + neighbour.nodeID+ " seg g = " + g + " f = " + f);
-
+                        System.out.println("46 Segment start " + s.start.nodeID + " end " + neighbour.nodeID + " seg g = " + g + " g_value = " + current.g_Value + " f = " + f);
+//TODO why does the g value not add up to the total length????
                         // create an AStar <node, prev, g, f> of the unvisited neighbour and add it to the Priority Queue fringe
                         AStar next = new AStar(neighbour, current.node, g, f);
                         fringe.add(next);
@@ -116,13 +115,16 @@ public class AStarPath {
                     thisNode = thisAstar.node;
                     prevNode = thisAstar.prev;
                     for(Segment s : thisNode.segments) {
+//                        if (s.end.nodeID == prevNode.nodeID) {
                         if (s.end.nodeID == prevNode.nodeID || s.start.nodeID == prevNode.nodeID) {
                             shortestPath.add(s);
+                            System.out.println(n + ": segment " + s.road.name + " start " +  + s.start.nodeID + " end " + s.end.nodeID);
                             break;
                         }
                     }
                     if (prevNode.nodeID == startNode.nodeID) {
                         // we have found the end of the path and added it to the shortestPath
+//                        System.out.println("shortestPath " + shortestPath.get(0).road.name + shortestPath.get(1).road.name + shortestPath.get(shortestPath.size()-2).road.name + shortestPath.get(shortestPath.size()-1).road.name);
                         return shortestPath;
                     }
                     System.out.println("Node " + thisNode.nodeID + " prev " + prevNode.nodeID + " n " + n);

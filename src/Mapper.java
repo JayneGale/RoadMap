@@ -183,42 +183,60 @@ public class Mapper extends GUI {
 			str = "No path from ID:" + startNode.nodeID + " loc:" + startNode.location + " to ID:" + targetNode.nodeID + " loc:" + targetNode.location;
 		}
 		else {
+//			since segments were added from target back to start, to give directions we need to reverse the list
 			Collections.reverse(shortestPath);
 			graph.setShortestPathColour(shortestPath);
 			String startRoadNames = nodeNames(startNode);
 			String targetRoadNames = nodeNames(targetNode);
-			String str1 = "\n Shortest path from " + startRoadNames + " to NodeID" + targetRoadNames;
+			String str1 = "\n Shortest path from " + startRoadNames + " to " + targetRoadNames;
 			getTextOutputArea().setText(str1);
+
 			double weight = path.finalWeight;
-//			double totWeight = 0;
-//			this does NOT print the path in order! Dammit.
-			for (Segment s : shortestPath){
-				String roadName = s.road.name;
-				String thisRoadName = "";
-				String capName = "";
-				double totRoadDist = 0;
-				if(roadName == null){
+			double finalLen = path.FindLength(shortestPath, isTime);
+			double totLen = 0;
+
+			String thisRoadName = "";
+			String capName = "";
+			double roadLen = 0;
+			for (int i = 0; i < shortestPath.size(); i++){
+				Segment s = shortestPath.get(i);
+				System.out.println("Segment " + i + " road name " + s.road.name + " " + s.length +"km");
+				if(s.road.name == null){
 					System.out.println("Gotta handle null roadName: " + s.length + "km, roadID "  + s.road.roadID);
 				}
-// TODO work out logic of totalling segment weights for same named segments and only printing once when the name changes or at the end of the loop
-
-				if (thisRoadName != s.road.name) {
-					totRoadDist += s.length;
+// if the new segment does NOT have the same name as the last segment, store the last one's CapName and roadLen
+				if (s.road.name != thisRoadName) {
+					// there is no previous segment for i = 0, and the final segment has no next segment name
+					if (i != 0) {
+						String roadLen2 = String.format("%.1f", roadLen);
+						getTextOutputArea().append("\n" + capName + " " + roadLen2);
+					}
+// Capitalise the new roadName; restart the length
 					thisRoadName = s.road.name;
 					String roadN = thisRoadName.substring(0, 1).toUpperCase();
 					capName = roadN + thisRoadName.substring(1);
-					totRoadDist += s.length;
-					getTextOutputArea().append("\n " + capName + String.format(" %.2fkm", totRoadDist));
+					roadLen = s.length;
+					totLen += roadLen;
 				}
-
+//				else s.road.name does = thisRoadName, its a continuation of the same road so cumulate the roadLen
+				else {
+					roadLen += s.length;
+				}
+//				getTextOutputArea().append("\n " + capName + String.format(" %.2fkm", roadLen));
 //				totWeight += s.length;
+				if(i >= shortestPath.size()-1){
+					String roadLen2 = String.format("%.1f", roadLen);
+					totLen += roadLen;
+					getTextOutputArea().append("\n" + capName + " " + roadLen2);
+				}
 			}
+			System.out.println("Total length " + totLen);
 
 //			This DOES calculate the total distance correctly both via the algorithm and by adding the segments separately
 //			str = String.format("\n Algorithm %.2f vs Sum %.2f km ", weight, totWeight);
-			str = String.format("\n Total Distance %.1f km ", weight);
+			str = String.format("\n Total Distance %.1f km ", weight + " or findLength  %.1f", finalLen);
 			if(isTime){
-				str = String.format("\n Total time %.2f min", weight*60);
+				str = String.format("\n Total time %.2f min", weight*60 + " or findLength  %.1f", finalLen);
 			}
 			}
 		getTextOutputArea().append(str);
@@ -284,14 +302,14 @@ public class Mapper extends GUI {
 			roadNames = "Corner of ";
 		}
 		for (Segment s : node.segments) {
-			System.out.println(s.road.name);
+//			System.out.println(s.road.name);
 			if (s.road.name != null) {
 				if (thisRoadName != s.road.name) {
 					thisRoadName = s.road.name;
 					String roadN = thisRoadName.substring(0, 1).toUpperCase();
 					String capName = roadN + thisRoadName.substring(1);
 					roadNames = roadNames + capName + " ";
-					System.out.println("Mapper 283" + capName);
+//					System.out.println("nodeNames Mapper 310 " + capName);
 				}
 			}
 		}
