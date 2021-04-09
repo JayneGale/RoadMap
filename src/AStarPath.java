@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class AStarPath {
-    public double finalWeight = 0;
+    public double final_g_Value = 0;
     protected double g;
     protected double f;
 
@@ -29,7 +29,7 @@ public class AStarPath {
 
                 // Check if the target Node is now visited, we have reached the target // we don't stop the first time we reach the target as the endNode, only when we visit the target for the first time
                 if (current.node.nodeID == targetNode.nodeID) {
-                    finalWeight = current.g_Value;
+                    final_g_Value = current.g_Value;
                     System.out.println("36 Reached the target! " + current.node.nodeID + " g_value" + current.g_Value);
                     break;
                 }
@@ -57,7 +57,7 @@ public class AStarPath {
                         //  f = g + h is the ie  estimated total cost from the start to the end (priority queue selects for minimal f)
                         //  h = the heuristic h_function (crow flies distance or time)
                         f = g + h_function(neighbour, targetNode, isTime);
-                        System.out.println("46 Segment start " + s.start.nodeID + " end " + neighbour.nodeID + " seg g = " + g + " g_value = " + current.g_Value + " f = " + f);
+                        System.out.println("60" + s.road.name + " start " + s.start.nodeID + " end " + s.end.nodeID + " neighbour" + neighbour.nodeID + " seg g = " + g + " g_value = " + current.g_Value + " f = " + f);
 //TODO why does the g value not add up to the total length????
                         // create an AStar <node, prev, g, f> of the unvisited neighbour and add it to the Priority Queue fringe
                         AStar next = new AStar(neighbour, current.node, g, f);

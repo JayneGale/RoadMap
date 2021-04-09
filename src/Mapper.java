@@ -191,7 +191,7 @@ public class Mapper extends GUI {
 			String str1 = "\n Shortest path from " + startRoadNames + " to " + targetRoadNames;
 			getTextOutputArea().setText(str1);
 
-			double weight = path.finalWeight;
+			double weight = path.final_g_Value;
 			double finalLen = path.FindLength(shortestPath, isTime);
 			double totLen = 0;
 
@@ -209,14 +209,14 @@ public class Mapper extends GUI {
 					// there is no previous segment for i = 0, and the final segment has no next segment name
 					if (i != 0) {
 						String roadLen2 = String.format("%.1f", roadLen);
-						getTextOutputArea().append("\n" + capName + " " + roadLen2);
+						getTextOutputArea().append("\n " + capName + " " + roadLen2);
 					}
 // Capitalise the new roadName; restart the length
 					thisRoadName = s.road.name;
 					String roadN = thisRoadName.substring(0, 1).toUpperCase();
 					capName = roadN + thisRoadName.substring(1);
-					roadLen = s.length;
 					totLen += roadLen;
+					roadLen = s.length;
 				}
 //				else s.road.name does = thisRoadName, its a continuation of the same road so cumulate the roadLen
 				else {
@@ -226,17 +226,17 @@ public class Mapper extends GUI {
 //				totWeight += s.length;
 				if(i >= shortestPath.size()-1){
 					String roadLen2 = String.format("%.1f", roadLen);
+					getTextOutputArea().append("\n " + capName + " " + roadLen2);
 					totLen += roadLen;
-					getTextOutputArea().append("\n" + capName + " " + roadLen2);
 				}
 			}
-			System.out.println("Total length " + totLen);
+			System.out.println("233 Total length " + totLen);
 
 //			This DOES calculate the total distance correctly both via the algorithm and by adding the segments separately
 //			str = String.format("\n Algorithm %.2f vs Sum %.2f km ", weight, totWeight);
-			str = String.format("\n Total Distance %.1f km ", weight + " or findLength  %.1f", finalLen);
+			str = String.format("\n Total Distance %.1f km", finalLen);
 			if(isTime){
-				str = String.format("\n Total time %.2f min", weight*60 + " or findLength  %.1f", finalLen);
+				str = String.format("\n Total time %.2f min, distance %.1f km", weight*60, finalLen);
 			}
 			}
 		getTextOutputArea().append(str);
