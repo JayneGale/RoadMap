@@ -16,9 +16,10 @@ import java.util.*;
 public class Mapper extends GUI {
 	public static final Color NODE_COLOUR = new Color(77, 113, 255);
 	public static final Color SEGMENT_COLOUR = new Color(130, 130, 130);
-	public static final Color HIGHLIGHT_COLOUR = new Color(253, 213, 57);
-	public static final Color TARGET_COLOUR = new Color (255, 67, 10);
-	public static final Color SHORTEST_PATH__COLOUR = new Color(107, 253, 57);
+	public static final Color HIGHLIGHT_COLOUR = new Color(255, 255, 30);
+	public static final Color TARGET_COLOUR = new Color (255, 100, 0);
+	public static final Color SHORTEST_PATH__COLOUR = new Color(107, 253, 60);
+	public static final Color ARTICULATION_POINT = new Color(255,0, 34);
 
 	// these two constants define the size of the node squares at different zoom
 	// levels; the equation used is node size = NODE_INTERCEPT + NODE_GRADIENT *
@@ -174,11 +175,9 @@ public class Mapper extends GUI {
 	public void DoAStar(Node startNode, Node targetNode, boolean isTime) {
 		List<Segment> shortestPath;
 		ArrayList<AStar> visitedNodes;
-		System.out.println("Mapper175 DoAStar startNode nodeID " + startNode + " target nodeID " + targetNode + " isTime " + isTime);
 		visitedNodes = path.FindPath(startNode, targetNode, isTime);
-		System.out.println("Mapper178 TrackPrev visited.size() " + visitedNodes.size());
 		shortestPath = path.TrackPrev(visitedNodes, startNode, targetNode);
-		String str = "";
+		String str;
 		if(shortestPath.isEmpty()) {
 			str = "No path from ID:" + startNode.nodeID + " loc:" + startNode.location + " to ID:" + targetNode.nodeID + " loc:" + targetNode.location;
 		}
@@ -193,14 +192,14 @@ public class Mapper extends GUI {
 
 			double weight = path.final_g_Value;
 			double finalLen = path.FindLength(shortestPath, isTime);
-			double totLen = 0;
+//			double totLen = 0;
 
 			String thisRoadName = "";
 			String capName = "";
 			double roadLen = 0;
 			for (int i = 0; i < shortestPath.size(); i++){
 				Segment s = shortestPath.get(i);
-				System.out.println("Segment " + i + " road name " + s.road.name + " " + s.length +"km");
+//				System.out.println("Segment " + i + " road " + s.road.name + " " + s.length +"km");
 				if(s.road.name == null){
 					System.out.println("Gotta handle null roadName: " + s.length + "km, roadID "  + s.road.roadID);
 				}
@@ -209,13 +208,13 @@ public class Mapper extends GUI {
 					// there is no previous segment for i = 0, and the final segment has no next segment name
 					if (i != 0) {
 						String roadLen2 = String.format("%.1f", roadLen);
-						getTextOutputArea().append("\n " + capName + " " + roadLen2);
+						getTextOutputArea().append("\n " + capName + " " + roadLen2 + " km");
 					}
 // Capitalise the new roadName; restart the length
 					thisRoadName = s.road.name;
 					String roadN = thisRoadName.substring(0, 1).toUpperCase();
 					capName = roadN + thisRoadName.substring(1);
-					totLen += roadLen;
+//					totLen += roadLen;
 					roadLen = s.length;
 				}
 //				else s.road.name does = thisRoadName, its a continuation of the same road so cumulate the roadLen
@@ -226,14 +225,12 @@ public class Mapper extends GUI {
 //				totWeight += s.length;
 				if(i >= shortestPath.size()-1){
 					String roadLen2 = String.format("%.1f", roadLen);
-					getTextOutputArea().append("\n " + capName + " " + roadLen2);
-					totLen += roadLen;
+					getTextOutputArea().append("\n " + capName + " " + roadLen2 + " km");
+//					totLen += roadLen;
 				}
 			}
-			System.out.println("233 Total length " + totLen);
-
+//			System.out.println("233 Total length " + totLen);
 //			This DOES calculate the total distance correctly both via the algorithm and by adding the segments separately
-//			str = String.format("\n Algorithm %.2f vs Sum %.2f km ", weight, totWeight);
 			str = String.format("\n Total Distance %.1f km", finalLen);
 			if(isTime){
 				str = String.format("\n Total time %.2f min, distance %.1f km", weight*60, finalLen);
@@ -258,9 +255,22 @@ public class Mapper extends GUI {
 		getTextOutputArea().setText(str);
 	}
 
+	public ArticulationPoints AP = new ArticulationPoints();
+
 	@Override
 	protected void onAPs() {
-// take the Graph and find all the APs
+//		TODO I could set up the onClick method to initialise the root AP?
+		// set up APObjects with depth -1 for all the Nodes
+		Node root = startNode;
+		if (startNode == null){
+			root = graph.nodes.get(12420);
+			System.out.println("root node 12420: " + root.nodeID + root.location + root.toString());
+		}
+		Map<Integer,APObject> allNodes = AP.setupAllNodesForAP(graph, root);
+		// Find Articulation Points
+		ArrayList<APObject> APs = AP.FindAPs(graph, root);
+		// highlight all the APs on the graph
+		graph.highLightAPs(APs);
 	}
 
 	@Override
