@@ -26,7 +26,7 @@ public class Graph {
 	Collection<Road> highlightedRoads = new HashSet<>();
 	Collection<Segment> highlightShortestPath = new HashSet<>();
 //	List<Node> APs = new ArrayList<>();
-	ArrayList<APObject> APs = new ArrayList<>();
+	ArrayList<Node> APs = new ArrayList<>();
 
 	public Graph(File nodes, File roads, File segments, File polygons) {
 		this.nodes = Parser.parseNodes(nodes, this);
@@ -85,8 +85,8 @@ public class Graph {
 		if (APs != null)
 		{
 			g2.setColor(Mapper.ARTICULATION_POINT);
-			for(APObject a : APs){
-				if(a != null) {a.n.draw(g2, screen, origin, scale);}
+			for(Node n : APs){
+				if(n != null) {n.draw(g2, screen, origin, scale);}
 			}
 		}
 	}
@@ -108,7 +108,7 @@ public class Graph {
 		this.highlightShortestPath = segments;
 	}
 
-	public void highLightAPs(ArrayList<APObject> APs) {
+	public void highLightAPs(ArrayList<Node> APs) {
 		this.APs = APs;
 	}
 

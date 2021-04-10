@@ -266,9 +266,8 @@ public class Mapper extends GUI {
 			root = graph.nodes.get(12420);
 			System.out.println("root node 12420: " + root.nodeID + root.location + root.toString());
 		}
-		Map<Integer,APObject> allNodes = AP.setupAllNodesForAP(graph, root);
 		// Find Articulation Points
-		ArrayList<APObject> APs = AP.FindAPs(graph, root);
+		ArrayList<Node> APs = AP.FindAPs(graph, root);
 		// highlight all the APs on the graph
 		graph.highLightAPs(APs);
 	}
