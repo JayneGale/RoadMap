@@ -1,6 +1,7 @@
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +21,7 @@ public class Node {
 	// add a pair of incoming and outgoing adjacency lists
 	public final Collection<Segment> outGoing;
 	public final Collection<Segment> incoming;
+	public final ArrayList<Integer> nextNodeIDs;
 
 	public Node(int nodeID, double lat, double lon) {
 		this.nodeID = nodeID;
@@ -27,6 +29,8 @@ public class Node {
 		this.segments = new HashSet<Segment>();
 		this.outGoing = new HashSet<Segment>();
 		this.incoming = new HashSet<Segment>();
+		this.nextNodeIDs = new ArrayList<Integer>();
+
 	}
 
 	public void addSegment(Segment seg) { segments.add(seg); }
@@ -36,6 +40,12 @@ public class Node {
 // don't allow any roads that are not for cars
 			if(s.road.notforcar == 1){
 				continue;
+			}
+			if(this.nodeID == s.start.nodeID){
+				nextNodeIDs.add(s.end.nodeID);
+			}
+			else {
+				nextNodeIDs.add(s.start.nodeID);
 			}
 
 //				One_way:
