@@ -263,14 +263,15 @@ public class Mapper extends GUI {
 		Node root = startNode;
 		if (startNode == null){
 			root = graph.nodes.get(12420);
-			System.out.println("root node 12420: " + root.nodeID + root.location + root.toString());
+			System.out.println("StartNode null; set root node = 12420: " + root.nodeID + root.location + root.toString());
 		}
 		// Find Articulation Points
-		System.out.println("Mapper 269 set up AP graph unvisited");
+		System.out.println("Mapper269 set up AP graph unvisited");
 		HashMap<Integer,APObject> APObjects = AP.SetAllUnvisited(graph);
 
-		System.out.println("Mapper 271 start finding Nodes"  + startNode.nodeID + APObjects.get(startNode.nodeID).n.nodeID);
+		System.out.println("Mapper271 FindAPs from startNode "  + startNode.nodeID + APObjects.get(startNode.nodeID).n.nodeID);
 		ArrayList<Node> APs = AP.FindAPs(startNode);
+		System.out.println("Mapper274 APs size "  + APs.size());
 		// highlight all the APs on the graph
 		graph.highLightAPs(APs);
 	}
