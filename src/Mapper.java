@@ -259,7 +259,6 @@ public class Mapper extends GUI {
 
 	@Override
 	protected void onAPs() {
-//		TODO I could set up the onClick method to initialise the root AP?
 		// set up APObjects with depth -1 for all the Nodes
 		Node root = startNode;
 		if (startNode == null){
@@ -267,7 +266,11 @@ public class Mapper extends GUI {
 			System.out.println("root node 12420: " + root.nodeID + root.location + root.toString());
 		}
 		// Find Articulation Points
-		ArrayList<Node> APs = AP.FindAPs(graph, root);
+		System.out.println("Mapper 269 set up AP graph unvisited");
+		HashMap<Integer,APObject> APObjects = AP.SetAllUnvisited(graph);
+
+		System.out.println("Mapper 271 start finding Nodes"  + startNode.nodeID + APObjects.get(startNode.nodeID).n.nodeID);
+		ArrayList<Node> APs = AP.FindAPs(startNode);
 		// highlight all the APs on the graph
 		graph.highLightAPs(APs);
 	}
