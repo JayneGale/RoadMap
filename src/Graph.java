@@ -22,11 +22,10 @@ public class Graph {
 
 	Node highlightedNode;
 	Node highlightTarget;
-	Node AP;
 	Collection<Road> highlightedRoads = new HashSet<>();
 	Collection<Segment> highlightShortestPath = new HashSet<>();
 //	List<Node> APs = new ArrayList<>();
-	HashSet<Node> APs = new HashSet<>();
+	Collection<Node> APs = new HashSet<>();
 
 	public Graph(File nodes, File roads, File segments, File polygons) {
 		this.nodes = Parser.parseNodes(nodes, this);
@@ -84,6 +83,7 @@ public class Graph {
 //		 draw the APs, if any
 		if (APs != null)
 		{
+			System.out.println("Graph87 " + APs.size());
 			g2.setColor(Mapper.ARTICULATION_POINT);
 			for(Node n : APs){
 				if(n != null) {n.draw(g2, screen, origin, scale);}

@@ -38,9 +38,9 @@ public class Node {
 	public void addAdjacencyLists(Node node) {
 		for (Segment s : node.segments){
 // don't allow any roads that are not for cars
-			if(s.road.notforcar == 1){
-				continue;
-			}
+//			if(s.road.notforcar == 1){
+//				continue;
+//			}
 			if(this.nodeID == s.start.nodeID){
 				nextNodeIDs.add(s.end.nodeID);
 			}

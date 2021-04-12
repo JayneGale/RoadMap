@@ -1,12 +1,12 @@
 import java.util.*;
 
 public class ArticulationPoints {
-    public int numSubTrees = 0;
     public HashMap<Integer, APObject> APObjects = new HashMap<>();
     public Stack<APObject> stack = new Stack<>();
-    public HashSet<Node> APs = new HashSet<>();
-//      Initialise the set of APs as empty = {}, none yet, this will be the output
+//    public HashSet<Node> APs = new HashSet<>();
+    public Boolean verbose = false;
 //      Initialise all the depths and rB to -1 for every node in the graph and the children to empty
+
     public HashMap<Integer,APObject> SetAllUnvisited(Graph graph) {
         for (Node n : graph.nodes.values()) {
             n.addAdjacencyLists(n);
@@ -16,13 +16,21 @@ public class ArticulationPoints {
         }
         return APObjects;
     }
+    public Node checkDisjointSets (Graph graph){
+        for (Node n : graph.nodes.values()) {
+            if (APObjects.get(n.nodeID).depth == -1){
+                return n;
+            }
+        }
+        return null;
+    }
 
-    public HashSet<Node> FindAPs(Node root) {
+    public HashSet<Node> FindAPs(Node root, HashSet APs) {
 //        Start with an empty set of AP Nodes
-        APs.clear();
         //      Create the root APObject and use it
         CreateRoot(root);
         APObject rootAP = APObjects.get(root.nodeID);
+        int numSubTrees = 0;
         //  the first nodes with a parent are these neighbours - its vital at least one exists
         ArrayList<APObject> neighbours = rootAP.children;
         if (neighbours.size() != 0) {
@@ -32,13 +40,13 @@ public class ArticulationPoints {
 //                if its depth is -1, it is unvisited; send it to iterAPs
                 if (neighAP.depth == -1) {
                     neighAP.parent = rootAP;
-                    iterAPs(neighAP.n, neighAP.depth, root);
+                    iterAPs(neighAP.n, neighAP.depth, root, APs);
                     numSubTrees++;
                     System.out.println("AP 46 subtrees " + numSubTrees);
                 }
             }
             if (numSubTrees > 1) {
-                System.out.println("AP 51 subtrees " + numSubTrees + root.nodeID);
+                System.out.println("AP51 subtrees: " + numSubTrees +  " root node: " +root.nodeID);
                 APs.add(root);
             }
         }
@@ -52,95 +60,84 @@ public class ArticulationPoints {
     }
 
 
-    private void iterAPs(Node firstNode, Integer depth, Node root) {
+    private void iterAPs(Node firstNode, Integer depth, Node root, HashSet<Node> APs) {
         // Initialise stack with first element (neighbour/ child of the root node)
         APObject firstNodeAP = APObjects.get(firstNode.nodeID);
-        System.out.println("iter56 push firstNode into stack " + firstNodeAP.depth + " rB " + firstNodeAP.reachBack + " num children  " + firstNodeAP.children.size());
+        if(verbose) System.out.println("iter56 push firstNode into stack " + firstNodeAP.depth + " rB " + firstNodeAP.reachBack + " num children  " + firstNodeAP.children.size());
         // push firstNode into the stack as the first element
         stack.push(firstNodeAP);
 
         while (!stack.empty()) {
             APObject elem = stack.peek();
-            System.out.println("iterAPs62 peek:" + elem.n.nodeID +" depth:" + elem.depth + " rB:" + elem.reachBack + " num children:" + elem.children.size());
+            if(verbose) System.out.println("iterAPs62 peek:" + elem.n.nodeID +" depth:" + elem.depth + " rB:" + elem.reachBack + " num children:" + elem.children.size());
 //        Case 1 the stack element is unvisited - populate the APObject for this node with children
-            if (elem.depth == -1) {
-                System.out.println("Case 1 elem is unvisited  " + elem.n.nodeID );
+            if (elem.depth <= -1) {
+                if(verbose)System.out.println("Case 1 elem is unvisited  " + elem.n.nodeID );
                 elem.depth = elem.parent.depth + 1;
                 elem.reachBack = elem.parent.depth + 1;
-                if (elem.parent!= null){
-                    System.out.println("Case 1 and parent exists" + elem.parent.n.nodeID);
-                }
-                else{
-                    System.out.println("Case 1 and parent is null");
-                }
+                if(verbose) System.out.println("Case 1 and parent is null");
 //              Populate children with the nodeIDs of all the child nodes to this one, that are not the parent.
                 ArrayList<APObject> children = findChildren(elem, root);
                 elem.children = children;
-                System.out.println("Case 1 iterAP 90 depth rb childsize " + elem.depth + elem.reachBack + children.size());
+                if(verbose) System.out.println("Case 1 iterAP 90 depth rb childsize " + elem.depth + elem.reachBack + children.size());
                 APObjects.put(elem.n.nodeID, elem);
             }
 //          Case 2 the element is visited and has children
             else if (!elem.children.isEmpty()){
                 ListIterator<APObject> iter = elem.children.listIterator();
 //                ArrayList<Integer> childCopy = elem.children;
-                System.out.println("Case 2 elem " + elem.n.nodeID + " visited and has "  + elem.children.size() + " children rB:" + elem.reachBack);
+                if(verbose) System.out.println("Case 2 elem " + elem.n.nodeID + " visited and has "  + elem.children.size() + " children rB:" + elem.reachBack);
                 while(iter.hasNext()){
                     APObject child = iter.next();
                     iter.remove();
-//                    APObject child = APObjects.get(child);
 //                    if child is visited, check its reachBack isn't less than the current node rB
                     if (child.depth != -1){
-                        System.out.println("101 child has been visited " + child.n.nodeID + " take min of depth " + child.depth + " and n rB " + elem.reachBack);
+                        if(verbose)System.out.println("101 child has been visited " + child.n.nodeID + " take min of depth " + child.depth + " and n rB " + elem.reachBack);
                         elem.reachBack = Math.min(child.depth, elem.reachBack);
                         APObjects.put(elem.n.nodeID, elem);
 //                        I really want to write elem.n.node.p !should have called the parent nodeP
                     }
                     else{
-//                      child is unvisited; set its depth to n+1 ;
-//                        child.depth = elem.depth + 1;
-//                        child.reachBack = child.depth;
                         child.parent = elem;
 //                        System.out.println("101 child has not been visited " + child.n.nodeID + " take min of depth " + child.depth + " and n rB " + elem.reachBack);
 //                      push the child into the stack
                         stack.push(child);
-                        System.out.println("104 add child " + child.n.nodeID + " to stack" + " it's num children:" + child.children.size() + " stack size now " + stack.size());
+                        if(verbose)System.out.println("104 add child " + child.n.nodeID + " to stack" + " it's num children:" + child.children.size() + " stack size now " + stack.size());
                     }
                 }
-//              once through the children, remove all children from n.children
-//                elem.children.clear();
-//                TODO check if this is the place it is going wrong and maybe copy the children and remove them one by one
-//                or put them in a queue or a stack
                 APObjects.put(elem.n.nodeID, elem);
             }
 //            Case 3 the element has no children and its a visited node
             else{
-                System.out.println("Case 3 elem has no children  " + elem.n.nodeID + " and its visited RB " + elem.reachBack);
-//            even if it is the firstNode it should have a parent
+                if(verbose)System.out.println("Case 3 elem has no children  " + elem.n.nodeID + " and its visited RB " + elem.reachBack);
                 if (elem.parent != null && elem.n.nodeID != firstNode.nodeID){
-//                if (elem.parent != null){
                     APObject parent = APObjects.get(elem.parent.n.nodeID);
 //                  before doing the min, check if either has a negative reachback - they shouldn't as they should both be visited
-                    if (parent.reachBack < 0 || elem.reachBack < 0) {
-                        System.out.println("ALERT 119 Case 3 reached unvisited! " + elem.n.nodeID + " rB: " + elem.reachBack + " parent " + parent.n.nodeID + " rB: " + parent.reachBack );
+                    if (parent.reachBack < 0){
+                        if (elem.reachBack <= 0) {
+                            System.out.println("ALERT 118 Case 3 reached unvisited " + elem.n.nodeID + " rB: " + elem.reachBack + " parent " + parent.n.nodeID + " rB: " + parent.reachBack );
+                        }
+                        else parent.reachBack = elem.reachBack;
                     }
+                    else if (elem.reachBack <= 0) parent.reachBack = parent.reachBack; // unvisited node
                     else {
                         parent.reachBack = Math.min(elem.reachBack, parent.reachBack);
-                        APObjects.put(parent.n.nodeID, parent);
-                        System.out.println(" Case 3 97 parent depth and elem rB " + parent.depth + elem.depth);
-                        if(elem.reachBack >= parent.depth){
-                            System.out.println("Adding parent to APs " + parent.n.nodeID);
-                            APs.add(parent.n);
-                        }
-                        elem.reachBack = depth;
-                        APObjects.put(elem.n.nodeID, elem);
                     }
+                    APObjects.put(parent.n.nodeID, parent);
+                    if(verbose)System.out.println(" Case 3 97 parent depth and elem rB " + parent.depth + elem.depth);
+                    if(elem.reachBack >= parent.depth){
+                        System.out.println("Adding to APs parent: " + parent.n.nodeID);
+                        APs.add(parent.n);
+                    }
+                    elem.reachBack = depth;
+                    APObjects.put(elem.n.nodeID, elem);
                 }
                 else {
-                    System.err.println("144 Unvisited node when it shouldn't be. No parent" + elem.n.nodeID);
+                    System.out.println("136 Case 3 Unvisited node has null parent" + elem.n.nodeID);
                 }
                 // pop the stack to remove the peeked element
                 APObject stackTop = stack.pop();
-                System.out.println("151 elem pop from stack " + stackTop.n.nodeID + " stack size now " + stack.size());
+                if(verbose)System.out.println("140 elem pop from stack " + stackTop.n.nodeID + " stack size now " + stack.size());
             }
         }
     }
@@ -159,32 +156,18 @@ public class ArticulationPoints {
         System.out.println("Neighbours = " + root.nextNodeIDs );
         APObjects.put(root.nodeID, rootAP);
     }
-//    private void CreateFirstNodeAP(APObject firstNodeAP, APObject rootAP) {
-//        APObject firstNodeAP = APObjects.get(firstNode.nodeID);
-//        firstNodeAP.depth = 1;
-//        firstNodeAP.reachBack = 1;
-//        firstNodeAP.parent = rootAP;
-//        ArrayList<Integer> children = new ArrayList<>();
-//        for (int child : firstNode.nextNodeIDs){
-//            if (child != root.nodeID){
-//                children.add(child);
-//            }
-//        }
-//        firstNodeAP.children = children;
-//        APObjects.put(firstNodeAP.n.nodeID, firstNodeAP);
-//    }
 
     private ArrayList<APObject> findChildren(APObject elem, Node root) {
         ArrayList<APObject> children = new ArrayList<>();
         if(elem.parent == null) {
-            System.err.println(elem.n.nodeID + "'s parent is null");
+            if(verbose)System.err.println(elem.n.nodeID + "'s parent is null");
             return children;
         }
         for (int child : elem.n.nextNodeIDs){
 //            APObject parentAP = APObjects.get(elem.parent.n.nodeID);
             APObject childAP = APObjects.get(child);
 //            adding in the root node creates a child with a null parent
-            System.out.println("186 adding " + elem.n.nodeID + "'s child = " + child + " unless root:" + root.nodeID + " or parent:" + elem.parent.n.nodeID);
+            if(verbose)System.out.println("177 adding " + elem.n.nodeID + "'s child = " + child + " unless root:" + root.nodeID + " or parent:" + elem.parent.n.nodeID);
             if (child != root.nodeID && child != elem.parent.n.nodeID){
                 children.add(childAP);
             }

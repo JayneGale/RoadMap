@@ -268,8 +268,17 @@ public class Mapper extends GUI {
 		// Find Articulation Points
 		System.out.println("Mapper269 set up AP graph unvisited");
 		HashMap<Integer,APObject> APObjects = AP.SetAllUnvisited(graph);
-		System.out.println("Mapper271 FindAPs from startNode "  + root.nodeID + " " + APObjects.get(root.nodeID).n.nodeID);
-		HashSet<Node> APs = AP.FindAPs(root);
+		HashSet<Node> APs = new HashSet<>();
+		APs.clear();
+		int count = 0;
+		while (root != null){
+			System.out.println("Mapper271 count:" + count + " FindAPs from "  + root.nodeID + " check APObject" + APObjects.get(root.nodeID).n.nodeID);
+			APs.addAll(AP.FindAPs(root, APs));
+			Node newRoot = AP.checkDisjointSets(graph);
+			System.out.println("Mapper273 APs size" + APs.size() + " newRoot: " + newRoot);
+			root = newRoot;
+			count++;
+		}
 		System.out.println("Mapper274 APs size "  + APs.size());
 		// highlight all the APs on the graph
 		graph.highLightAPs(APs);
