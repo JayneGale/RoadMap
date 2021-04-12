@@ -4,10 +4,10 @@ public class APObject {
     public final Node n;
     public int depth;
     public int reachBack;
-    public Node parent;
-    public ArrayList<Integer> children;
+    public APObject parent;
+    public ArrayList<APObject> children;
 
-    public APObject(Node n, int depth, int reachBack, Node parent, ArrayList<Integer> children) {
+    public APObject(Node n, int depth, int reachBack, APObject parent, ArrayList<APObject> children) {
         this.n = n;
         this.depth = depth;
         this.reachBack = reachBack;

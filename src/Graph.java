@@ -26,7 +26,7 @@ public class Graph {
 	Collection<Road> highlightedRoads = new HashSet<>();
 	Collection<Segment> highlightShortestPath = new HashSet<>();
 //	List<Node> APs = new ArrayList<>();
-	ArrayList<Node> APs = new ArrayList<>();
+	HashSet<Node> APs = new HashSet<>();
 
 	public Graph(File nodes, File roads, File segments, File polygons) {
 		this.nodes = Parser.parseNodes(nodes, this);
@@ -108,7 +108,7 @@ public class Graph {
 		this.highlightShortestPath = segments;
 	}
 
-	public void highLightAPs(ArrayList<Node> APs) {
+	public void highLightAPs(HashSet<Node> APs) {
 		this.APs = APs;
 	}
 

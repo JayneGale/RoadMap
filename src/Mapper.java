@@ -262,18 +262,18 @@ public class Mapper extends GUI {
 		// set up APObjects with depth -1 for all the Nodes
 		Node root = startNode;
 		if (startNode == null){
-			root = graph.nodes.get(12420);
+			root = graph.nodes.get(12420); // a random node
 			System.out.println("StartNode null; set root node = 12420: " + root.nodeID + root.location + root.toString());
 		}
 		// Find Articulation Points
 		System.out.println("Mapper269 set up AP graph unvisited");
 		HashMap<Integer,APObject> APObjects = AP.SetAllUnvisited(graph);
-
-		System.out.println("Mapper271 FindAPs from startNode "  + startNode.nodeID + APObjects.get(startNode.nodeID).n.nodeID);
-		ArrayList<Node> APs = AP.FindAPs(startNode);
+		System.out.println("Mapper271 FindAPs from startNode "  + root.nodeID + " " + APObjects.get(root.nodeID).n.nodeID);
+		HashSet<Node> APs = AP.FindAPs(root);
 		System.out.println("Mapper274 APs size "  + APs.size());
 		// highlight all the APs on the graph
 		graph.highLightAPs(APs);
+		getTextOutputArea().setText("There are " + APs.size() + " Articulation points");
 	}
 
 	@Override
