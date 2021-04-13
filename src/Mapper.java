@@ -270,16 +270,12 @@ public class Mapper extends GUI {
 		HashMap<Integer,APObject> APObjects = AP.SetAllUnvisited(graph);
 		HashSet<Node> APs = new HashSet<>();
 		APs.clear();
-		int count = 0;
 		while (root != null){
-			System.out.println("Mapper271 count:" + count + " FindAPs from "  + root.nodeID + " check APObject" + APObjects.get(root.nodeID).n.nodeID);
 			APs.addAll(AP.FindAPs(root, APs));
 			Node newRoot = AP.checkDisjointSets(graph);
-			System.out.println("Mapper273 APs size" + APs.size() + " newRoot: " + newRoot);
+//			System.out.println("Mapper273 APs size" + APs.size() + " newRoot: " + newRoot);
 			root = newRoot;
-			count++;
 		}
-		System.out.println("Mapper274 APs size "  + APs.size());
 		// highlight all the APs on the graph
 		graph.highLightAPs(APs);
 		getTextOutputArea().setText("There are " + APs.size() + " Articulation points");

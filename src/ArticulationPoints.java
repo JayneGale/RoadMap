@@ -40,6 +40,7 @@ public class ArticulationPoints {
 //                if its depth is -1, it is unvisited; send it to iterAPs
                 if (neighAP.depth == -1) {
                     neighAP.parent = rootAP;
+                    stack.clear();
                     iterAPs(neighAP.n, neighAP.depth, root, APs);
                     numSubTrees++;
                     System.out.println("AP 46 subtrees " + numSubTrees);
@@ -85,7 +86,6 @@ public class ArticulationPoints {
 //          Case 2 the element is visited and has children
             else if (!elem.children.isEmpty()){
                 ListIterator<APObject> iter = elem.children.listIterator();
-//                ArrayList<Integer> childCopy = elem.children;
                 if(verbose) System.out.println("Case 2 elem " + elem.n.nodeID + " visited and has "  + elem.children.size() + " children rB:" + elem.reachBack);
                 while(iter.hasNext()){
                     APObject child = iter.next();
@@ -94,12 +94,10 @@ public class ArticulationPoints {
                     if (child.depth != -1){
                         if(verbose)System.out.println("101 child has been visited " + child.n.nodeID + " take min of depth " + child.depth + " and n rB " + elem.reachBack);
                         elem.reachBack = Math.min(child.depth, elem.reachBack);
-                        APObjects.put(elem.n.nodeID, elem);
-//                        I really want to write elem.n.node.p !should have called the parent nodeP
+//                        I so want to be able to write elem.n.nodeP! I should have called the parent nodeP
                     }
                     else{
                         child.parent = elem;
-//                        System.out.println("101 child has not been visited " + child.n.nodeID + " take min of depth " + child.depth + " and n rB " + elem.reachBack);
 //                      push the child into the stack
                         stack.push(child);
                         if(verbose)System.out.println("104 add child " + child.n.nodeID + " to stack" + " it's num children:" + child.children.size() + " stack size now " + stack.size());
@@ -110,12 +108,12 @@ public class ArticulationPoints {
 //            Case 3 the element has no children and its a visited node
             else{
                 if(verbose)System.out.println("Case 3 elem has no children  " + elem.n.nodeID + " and its visited RB " + elem.reachBack);
-                if (elem.parent != null && elem.n.nodeID != firstNode.nodeID){
+                if (elem.n.nodeID != firstNode.nodeID){
                     APObject parent = APObjects.get(elem.parent.n.nodeID);
 //                  before doing the min, check if either has a negative reachback - they shouldn't as they should both be visited
                     if (parent.reachBack < 0){
-                        if (elem.reachBack <= 0) {
-                            System.out.println("ALERT 118 Case 3 reached unvisited " + elem.n.nodeID + " rB: " + elem.reachBack + " parent " + parent.n.nodeID + " rB: " + parent.reachBack );
+                        if (elem.reachBack < 0) { // unvisited node, should not be happening
+                            System.out.println("Case 3 reached unvisited " + elem.n.nodeID + " rB: " + elem.reachBack + " parent " + parent.n.nodeID + " rB: " + parent.reachBack );
                         }
                         else parent.reachBack = elem.reachBack;
                     }
@@ -159,17 +157,11 @@ public class ArticulationPoints {
 
     private ArrayList<APObject> findChildren(APObject elem, Node root) {
         ArrayList<APObject> children = new ArrayList<>();
-        if(elem.parent == null) {
-            if(verbose)System.err.println(elem.n.nodeID + "'s parent is null");
-            return children;
-        }
         for (int child : elem.n.nextNodeIDs){
-//            APObject parentAP = APObjects.get(elem.parent.n.nodeID);
             APObject childAP = APObjects.get(child);
-//            adding in the root node creates a child with a null parent
             if(verbose)System.out.println("177 adding " + elem.n.nodeID + "'s child = " + child + " unless root:" + root.nodeID + " or parent:" + elem.parent.n.nodeID);
-            if (child != root.nodeID && child != elem.parent.n.nodeID){
-                children.add(childAP);
+            if (child != elem.parent.n.nodeID){
+                    children.add(childAP);
             }
         }
         return children;
