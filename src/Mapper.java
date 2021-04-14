@@ -262,9 +262,9 @@ public class Mapper extends GUI {
 			root = graph.nodes.get(12420); // a random node
 		}
 		// Find Articulation Points
-		AP.SetAllUnvisited(graph);
 		HashSet<Node> APs = new HashSet<>();
 		APs.clear();
+		AP.SetAllUnvisited(graph);
 		while (root != null){
 			APs.addAll(AP.FindAPs(root, APs));
 			root = AP.checkDisjointSets(graph);
