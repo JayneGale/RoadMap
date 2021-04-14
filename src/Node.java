@@ -30,22 +30,20 @@ public class Node {
 		this.outGoing = new HashSet<Segment>();
 		this.incoming = new HashSet<Segment>();
 		this.nextNodeIDs = new ArrayList<Integer>();
-
 	}
 
 	public void addSegment(Segment seg) { segments.add(seg); }
 
 	public void addAdjacencyLists(Node node) {
-		for (Segment s : node.segments){
-//			 create the node neighbours for the AP algorithm
-//		     to get the right number of nodes, I found I had to ignore the 'notforcar' restricution
-
-			if(this.nodeID == s.start.nodeID){
+		for (Segment s : node.segments) {
+			if (this.nodeID == s.start.nodeID) {
 				nextNodeIDs.add(s.end.nodeID);
-			}
-			else {
+			} else {
 				nextNodeIDs.add(s.start.nodeID);
 			}
+// only add segments that allow cars ie notforcar == 0
+			if (s.road.notforcar == 0) {
+//				test for one way roads
 
 //			 don't allow any roads that are not for cars in the A* algorithm
 			if(s.road.notforcar == 1){
@@ -57,21 +55,40 @@ public class Node {
 //				0 : both directions allowed
 //				1 : one way road, direction from beginning to end
 //
-//					this is not a oneway road, it is two edges one going each way; add it to both incoming and outgoing adj lists
-			if (s.road.oneway == 0){
-				outGoing.add(s);
-				incoming.add(s);
-//					BUT still have to check the order pf the nodes; set the segment start as this Node and end as the other one
-//			for this node, could make a new edge that is the reverse of the old one but don't need to
-			}
-			if (s.road.oneway == 1){
-				if(this.nodeID == s.start.nodeID){
+//					if its NOT a oneway road, add both segmentts; ie it is two edges, one going each way; add s to both incoming and outgoing adj lists
+				if (s.road.oneway == 0) {
 					outGoing.add(s);
-//				this node is the start of one way segment s; add it only to the outgoing adjacency list
-				}
-				else if(this.nodeID == s.end.nodeID){
 					incoming.add(s);
+//					check the order of the nodes; set the segment start as this Node and end as the other one
+				}
+				if (s.road.oneway == 1) {
+					if (this.nodeID == s.start.nodeID) {
+						outGoing.add(s);
+//				this node is the start of one way segment s; add it only to the outgoing adjacency list
+					} else if (this.nodeID == s.end.nodeID) {
+						incoming.add(s);
 //				this node is the end of one-way road segment s ie add it only to the incoming adjacency list
+					}
+
+//					Other restrictions
+//					five values:  nodeID-1, roadID-1, nodeID, roadID-2, nodeID-2.
+//
+//					nodeID, the middle NodeID, specifies the intersection involved. ie this node.nodeID
+//							The restriction specifies that it is not permitted to turn from
+//							the road segment of roadID-1 going between nodeID-1 and this intersection, nodeID
+//							into the road segment of roadID-2 going between this intersection, nodeID and nodeID-2
+//					pseudocode
+//					if(this.nodeID.hasRestrictions) (new Restrictions list has size (of 5) > 0)
+//					move is banned if
+//					if(s.road.roadID == roadID-1)
+					// case1: s.start = this node, s.end = node1 road = road 1
+					// case2: s.start = node1 s.end = this node, road = road 1
+//					AND
+//					if(s.road.roadID == roadID-1)
+					// case1: s.start = this node, s.end = node2 road = road 2
+					// case2: s.start = node2 s.end = this node, road = road 2
+//					AND ?? s.roadID can't be both roadID 1 and roadID 2
+//					run out of time
 				}
 			}
 		}

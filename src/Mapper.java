@@ -73,7 +73,7 @@ public class Mapper extends GUI {
 
 		// if it's close enough, highlight it and show some information.
 		if (clicked.distance(closest.location) < MAX_CLICKED_DISTANCE) {
-//			graph.setHighligt(closest);
+			graph.setHighlight(closest);
 			String roadNames = nodeNames(closest);
 				getTextOutputArea().setText(roadNames);
 			}
@@ -187,7 +187,9 @@ public class Mapper extends GUI {
 			graph.setShortestPathColour(shortestPath);
 			String startRoadNames = nodeNames(startNode);
 			String targetRoadNames = nodeNames(targetNode);
-			String str1 = "\n Shortest path from " + startRoadNames + " to " + targetRoadNames;
+			String intro = "\n Shortest path from ";
+			if(isTime) intro = "\n Fastest path from ";
+			String str1 = intro + startRoadNames + " to " + targetRoadNames;
 			getTextOutputArea().setText(str1);
 
 			double weight = path.final_g_Value;
@@ -225,9 +227,9 @@ public class Mapper extends GUI {
 			}
 //			System.out.println("233 Total length " + totLen);
 //			This DOES calculate the total distance correctly both via the algorithm and by adding the segments separately
-			str = String.format("\n Total Distance %.1f km", finalLen);
+			str = String.format("\n \n Total Distance %.1f km", finalLen);
 			if(isTime){
-				str = String.format("\n Total time %.2f min, distance %.1f km", weight*60, finalLen);
+				str = String.format("\n \n Total time %.2f min, distance %.1f km", weight*60, finalLen);
 			}
 			}
 		getTextOutputArea().append(str);
@@ -259,14 +261,12 @@ public class Mapper extends GUI {
 			root = graph.nodes.get(12420); // a random node
 		}
 		// Find Articulation Points
-		HashMap<Integer,APObject> APObjects = AP.SetAllUnvisited(graph);
+		AP.SetAllUnvisited(graph);
 		HashSet<Node> APs = new HashSet<>();
 		APs.clear();
 		while (root != null){
 			APs.addAll(AP.FindAPs(root, APs));
-			Node newRoot = AP.checkDisjointSets(graph);
-//			System.out.println("Mapper273 APs size" + APs.size() + " newRoot: " + newRoot);
-			root = newRoot;
+			root = AP.checkDisjointSets(graph);
 		}
 		// highlight all the APs on the graph
 		graph.highLightAPs(APs);
@@ -313,7 +313,7 @@ public class Mapper extends GUI {
 		}
 		for (Segment s : node.segments) {
 			if (s.road.name != null) {
-				if (thisRoadName != s.road.name) {
+				if (!thisRoadName.equalsIgnoreCase(s.road.name)) {
 					thisRoadName = s.road.name;
 					String roadN = thisRoadName.substring(0, 1).toUpperCase();
 					String capName = roadN + thisRoadName.substring(1);

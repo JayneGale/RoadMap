@@ -8,7 +8,7 @@ public class AStarPath {
     public ArrayList<AStar> FindPath(Node startNode, Node targetNode, boolean isTime){
 
         ArrayList<AStar> path = new ArrayList<>();
-        List visited = new ArrayList();
+        ArrayList<Integer> visited = new ArrayList<>();
         // define an AStar object containing Node, g weight to this node, H estimate to goalNode
         PriorityQueue<AStar> fringe = new PriorityQueue<>(30, new SegmentComparator());
         //      create an AStar element for startNode with no prev and no g value
@@ -30,13 +30,11 @@ public class AStarPath {
                 // Check if the target Node is now visited, we have reached the target // we don't stop the first time we reach the target as the endNode, only when we visit the target for the first time
                 if (current.node.nodeID == targetNode.nodeID) {
                     final_g_Value = current.g_Value;
-                    System.out.println("36 Reached the target! " + current.node.nodeID + " g_value" + current.g_Value);
+//                    System.out.println("36 Reached the target! " + current.node.nodeID + " g_value" + current.g_Value);
                     break;
                 }
 
                 current.node.addAdjacencyLists(current.node);
-//                System.out.println("38 adjlist sizes out In " + current.node.outGoing.size() + " " + current.node.incoming.size());
-
                 // Populate the fringe with AStar elements for all the current node's unvisited neighbours
                 for (Segment s : current.node.outGoing) {
 //                     one end of the segment should be the current node - find out which is the node and which is its neighbour
@@ -57,13 +55,11 @@ public class AStarPath {
                         //  f = g + h is the ie  estimated total cost from the start to the end (priority queue selects for minimal f)
                         //  h = the heuristic h_function (crow flies distance or time)
                         f = g + h_function(neighbour, targetNode, isTime);
-//                        System.out.println("60" + s.road.name + " start " + s.start.nodeID + " end " + s.end.nodeID + " neighbour" + neighbour.nodeID + " seg g = " + g + " g_value = " + current.g_Value + " f = " + f);
                         // create an AStar <node, prev, g, f> of the unvisited neighbour and add it to the Priority Queue fringe
                         AStar next = new AStar(neighbour, current.node, g, f);
                         fringe.add(next);
                     }
                 }
-//                System.out.println("47 Peek PQ best neighbour: " + fringe.peek().node.nodeID + " g "   + fringe.peek().g_Value + " and f " + fringe.peek().f_Value);
                 // finished with current node: marked it as visited, removed it from the fringe, created AStar elements from all it's unvisited neighbours and populated the fringe with them  added all its segments to the path
             }
         }
@@ -76,13 +72,12 @@ public class AStarPath {
         for (AStar p : path) {
             if (p.node.nodeID == targetNode.nodeID) {
                 pathExists = true;
+                break;
             }
         }
         if (!pathExists){
             System.err.println("78 There is no path from startNode " + startNode.nodeID + " to targetNode " + targetNode.nodeID);
         }
-//        System.out.println("last visit in visited " + path.get(numVisits - 1).node.nodeID);
-        // return the set of AStar elements that
         return path;
     }
 
@@ -97,36 +92,31 @@ public class AStarPath {
 
             // if the startNode is the same as the end of the path, or there is only one node return an empty path
                 if(thisNode.nodeID == startNode.nodeID && numNodes <= 1) {
-                    shortestPath.isEmpty();
+                    shortestPath.clear();
                     System.err.println("Last node " + thisNode.nodeID + " is the startNode " + startNode.nodeID);
                     return shortestPath;
                 }
                 // this method will only work if the last element in visited is the targetNode
                 if(thisNode.nodeID != targetNode.nodeID) {
                     System.err.println("Last node " + thisNode.nodeID + " is not the target " + targetNode.nodeID);
-                    shortestPath.isEmpty();
+                    shortestPath.clear();
                     return shortestPath;
                 }
-//                System.out.println("Last ID " + thisNode.nodeID + " prev node ID " + prevNode.nodeID);
                 //Now that we have the correct end node and there are at least two nodes in the visited list
                 int n =0;
                 while (n < visited.size()){
                     thisNode = thisAstar.node;
                     prevNode = thisAstar.prev;
                     for(Segment s : thisNode.segments) {
-//                        if (s.end.nodeID == prevNode.nodeID) {
                         if (s.end.nodeID == prevNode.nodeID || s.start.nodeID == prevNode.nodeID) {
                             shortestPath.add(s);
-//                            System.out.println(n + ": segment " + s.road.name + " start " +  + s.start.nodeID + " end " + s.end.nodeID);
                             break;
                         }
                     }
                     if (prevNode.nodeID == startNode.nodeID) {
                         // we have found the end of the path and added it to the shortestPath
-//                        System.out.println("shortestPath " + shortestPath.get(0).road.name + shortestPath.get(1).road.name + shortestPath.get(shortestPath.size()-2).road.name + shortestPath.get(shortestPath.size()-1).road.name);
                         return shortestPath;
                     }
-//                    System.out.println("Node " + thisNode.nodeID + " prev " + prevNode.nodeID + " n " + n);
                     for (AStar a : visited) {
                         if (a.node.nodeID == prevNode.nodeID) {
                             thisAstar = a;
@@ -170,7 +160,12 @@ public class AStarPath {
     public double FindLength(Collection<Segment> shortestPath, boolean isTime) {
         double length = 0;
         for (Segment s : shortestPath){
-            length += s.length;
+            length = s.length;
+            if(isTime){
+                length = length/s.road.speed_limit;
+            }
+            else
+                length += length;
         }
         return length;
     }

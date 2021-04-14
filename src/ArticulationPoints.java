@@ -23,7 +23,7 @@ public class ArticulationPoints {
         return null;
     }
 
-    public HashSet<Node> FindAPs(Node root, HashSet APs) {
+    public HashSet<Node> FindAPs(Node root, HashSet<Node> APs) {
         //      Create the root APObject and use it
         CreateRoot(root);
         APObject rootAP = APObjects.get(root.nodeID);
@@ -31,16 +31,14 @@ public class ArticulationPoints {
         //  the first nodes with a parent are these neighbours - its vital at least one exists
         ArrayList<APObject> neighbours = rootAP.children;
         if (neighbours.size() != 0) {
-            System.out.println("AP34 root node " + root.nodeID + " has " + neighbours.size() + " neighbours");
             // iterate through all the neighbours via their nodeIDs in neighbours
             for (APObject neighAP : neighbours) {
 //                if its depth is -1, it is unvisited; send it to iterAPs
                 if (neighAP.depth <= -1) {
                     neighAP.parent = rootAP;
                     stack.clear();
-                    iterAPs(neighAP.n, neighAP.depth, root, APs);
+                    iterAPs(neighAP.n, neighAP.depth, APs);
                     numSubTrees++;
-                    System.out.println("AP 46 subtrees " + numSubTrees);
                 }
             }
             if (numSubTrees > 1) {
@@ -55,7 +53,7 @@ public class ArticulationPoints {
         return APs;
     }
 
-    private void iterAPs(Node firstNode, Integer depth, Node root, HashSet<Node> APs) {
+    private void iterAPs(Node firstNode, Integer depth, HashSet<Node> APs) {
         // Initialise stack with first element (neighbour/ child of the root node)
         APObject firstNodeAP = APObjects.get(firstNode.nodeID);
         stack.push(firstNodeAP); // push firstNode into the stack as the first element
@@ -99,14 +97,13 @@ public class ArticulationPoints {
                     }
                     APObjects.put(parent.n.nodeID, parent);
                     if(elem.reachBack >= parent.depth){
-                        System.out.println("Adding to APs parent: " + parent.n.nodeID);
                         APs.add(parent.n);
                     }
                     elem.reachBack = depth;
                     APObjects.put(elem.n.nodeID, elem);
                 }
                 // pop the stack to remove the peeked element
-                APObject stackTop = stack.pop();
+                stack.pop();
             }
         }
     }
