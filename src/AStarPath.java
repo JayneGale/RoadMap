@@ -134,15 +134,16 @@ public class AStarPath {
     public double g_function(Segment seg, boolean isTime){
         double g = seg.length;
         int speed;
+        int spLim = seg.road.speed_limit;
         if (isTime) {
 //            0 = 5km/h
 //            1 = 20km/h  2 = 40km/h  3 = 60km/h  4 = 80km/h  5 = 100km/h ie speed limit * 20
 //            6 = 110km/h 7 = no limit - assume also 110 km/h as no limits in NZ are above that currently
-            speed = seg.road.speed_limit*20;
-            if (seg.road.speed_limit <= 0){
+            speed = spLim*20;
+            if (spLim <= 0){
                 speed = 5;
             }
-            if(seg.road.speed_limit >= 6){
+            if(spLim >= 6){
                 speed = 110;
             }
             g = g/speed; //distance divided by speed kms/km/hr = hours
@@ -160,12 +161,8 @@ public class AStarPath {
     public double FindLength(Collection<Segment> shortestPath, boolean isTime) {
         double length = 0;
         for (Segment s : shortestPath){
-            length = s.length;
-            if(isTime){
-                length = length/s.road.speed_limit;
-            }
-            else
-                length += length;
+            g = g_function(s, isTime);
+            length += g;
         }
         return length;
     }

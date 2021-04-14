@@ -101,9 +101,10 @@ public class Mapper extends GUI {
 		// we have to do this carefully.
 		boolean exactMatch = false;
 		for (Road road : selected)
-			if (road.name.equals(query))
+			if (road.name.equals(query)){
 				exactMatch = true;
-
+				break;
+			}
 		// make a set of all the roads that match exactly, and make this our new
 		// selected set.
 		if (exactMatch) {
@@ -193,7 +194,7 @@ public class Mapper extends GUI {
 			getTextOutputArea().setText(str1);
 
 			double weight = path.final_g_Value;
-			double finalLen = path.FindLength(shortestPath, isTime);
+			double finalLen = path.FindLength(shortestPath, false);
 
 			String thisRoadName = "";
 			String capName = "";
