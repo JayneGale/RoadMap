@@ -192,14 +192,12 @@ public class Mapper extends GUI {
 
 			double weight = path.final_g_Value;
 			double finalLen = path.FindLength(shortestPath, isTime);
-//			double totLen = 0;
 
 			String thisRoadName = "";
 			String capName = "";
 			double roadLen = 0;
 			for (int i = 0; i < shortestPath.size(); i++){
 				Segment s = shortestPath.get(i);
-//				System.out.println("Segment " + i + " road " + s.road.name + " " + s.length +"km");
 				if(s.road.name == null){
 					System.out.println("Gotta handle null roadName: " + s.length + "km, roadID "  + s.road.roadID);
 				}
@@ -214,19 +212,15 @@ public class Mapper extends GUI {
 					thisRoadName = s.road.name;
 					String roadN = thisRoadName.substring(0, 1).toUpperCase();
 					capName = roadN + thisRoadName.substring(1);
-//					totLen += roadLen;
 					roadLen = s.length;
 				}
 //				else s.road.name does = thisRoadName, its a continuation of the same road so cumulate the roadLen
 				else {
 					roadLen += s.length;
 				}
-//				getTextOutputArea().append("\n " + capName + String.format(" %.2fkm", roadLen));
-//				totWeight += s.length;
 				if(i >= shortestPath.size()-1){
 					String roadLen2 = String.format("%.1f", roadLen);
 					getTextOutputArea().append("\n " + capName + " " + roadLen2 + " km");
-//					totLen += roadLen;
 				}
 			}
 //			System.out.println("233 Total length " + totLen);
@@ -263,10 +257,8 @@ public class Mapper extends GUI {
 		Node root = startNode;
 		if (startNode == null){
 			root = graph.nodes.get(12420); // a random node
-			System.out.println("StartNode null; set root node = 12420: " + root.nodeID + root.location + root.toString());
 		}
 		// Find Articulation Points
-		System.out.println("Mapper269 set up AP graph unvisited");
 		HashMap<Integer,APObject> APObjects = AP.SetAllUnvisited(graph);
 		HashSet<Node> APs = new HashSet<>();
 		APs.clear();
@@ -320,14 +312,12 @@ public class Mapper extends GUI {
 			roadNames = "Corner of ";
 		}
 		for (Segment s : node.segments) {
-//			System.out.println(s.road.name);
 			if (s.road.name != null) {
 				if (thisRoadName != s.road.name) {
 					thisRoadName = s.road.name;
 					String roadN = thisRoadName.substring(0, 1).toUpperCase();
 					String capName = roadN + thisRoadName.substring(1);
 					roadNames = roadNames + capName + " ";
-//					System.out.println("nodeNames Mapper 310 " + capName);
 				}
 			}
 		}
