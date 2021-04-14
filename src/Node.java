@@ -37,15 +37,19 @@ public class Node {
 
 	public void addAdjacencyLists(Node node) {
 		for (Segment s : node.segments){
-// don't allow any roads that are not for cars
-//			if(s.road.notforcar == 1){
-//				continue;
-//			}
+//			 create the node neighbours for the AP algorithm
+//		     to get the right number of nodes, I found I had to ignore the 'notforcar' restricution
+
 			if(this.nodeID == s.start.nodeID){
 				nextNodeIDs.add(s.end.nodeID);
 			}
 			else {
 				nextNodeIDs.add(s.start.nodeID);
+			}
+
+//			 don't allow any roads that are not for cars in the A* algorithm
+			if(s.road.notforcar == 1){
+				continue;
 			}
 
 //				One_way:
