@@ -83,7 +83,6 @@ public class Graph {
 //		 draw the APs, if any
 		if (APs != null)
 		{
-			System.out.println("Graph87 " + APs.size());
 			g2.setColor(Mapper.ARTICULATION_POINT);
 			for(Node n : APs){
 				if(n != null) {n.draw(g2, screen, origin, scale);}

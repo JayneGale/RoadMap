@@ -203,8 +203,8 @@ public class Mapper extends GUI {
 				if(s.road.name == null){
 					System.out.println("Gotta handle null roadName: " + s.length + "km, roadID "  + s.road.roadID);
 				}
-// if the new segment does NOT have the same name as the last segment, store the last one's CapName and roadLen
-				if (s.road.name != thisRoadName) {
+// if the new segment does NOT have the same name as the last segment, print the last one's CapName and roadLen
+				if (!s.road.name.equalsIgnoreCase(thisRoadName)) {
 					// there is no previous segment for i = 0, and the final segment has no next segment name
 					if (i != 0) {
 						String roadLen2 = String.format("%.1f", roadLen);

@@ -159,7 +159,7 @@ public class ArticulationPoints {
         ArrayList<APObject> children = new ArrayList<>();
         for (int child : elem.n.nextNodeIDs){
             APObject childAP = APObjects.get(child);
-            if(verbose)System.out.println("177 adding " + elem.n.nodeID + "'s child = " + child + " unless root:" + root.nodeID + " or parent:" + elem.parent.n.nodeID);
+//            if(verbose)System.out.println("177 adding " + elem.n.nodeID + "'s child = " + child + " unless root:" + root.nodeID + " or parent:" + elem.parent.n.nodeID);
             if (child != elem.parent.n.nodeID){
                     children.add(childAP);
             }
