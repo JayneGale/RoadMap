@@ -41,14 +41,14 @@ public class Node {
 			} else {
 				nextNodeIDs.add(s.start.nodeID);
 			}
+////			 don't allow any roads that are not for cars in the A* algorithm
+//			if(s.road.notforcar == 1){
+//				continue;
+//			}
+
 // only add segments that allow cars ie notforcar == 0
 			if (s.road.notforcar == 0) {
 //				test for one way roads
-
-//			 don't allow any roads that are not for cars in the A* algorithm
-			if(s.road.notforcar == 1){
-				continue;
-			}
 
 //				One_way:
 //				----------
@@ -80,6 +80,7 @@ public class Node {
 //					pseudocode
 //					if(this.nodeID.hasRestrictions) (new Restrictions list has size (of 5) > 0)
 //					move is banned if
+//					if()
 //					if(s.road.roadID == roadID-1)
 					// case1: s.start = this node, s.end = node1 road = road 1
 					// case2: s.start = node1 s.end = this node, road = road 1
